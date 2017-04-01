@@ -8,9 +8,9 @@
 #include "CCBuffer.h"
 
 
-v8::Local<v8::FunctionTemplate> CCBuffer::init()
+Local<FunctionTemplate> CCBuffer::init()
 {
-    v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
+    Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
     tpl->SetClassName(Nan::New("CCBuffer").ToLocalChecked());
     tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -30,15 +30,15 @@ v8::Local<v8::FunctionTemplate> CCBuffer::init()
         tpl->InstanceTemplate(),
         Nan::New<String>("length").ToLocalChecked(),
         (Nan::GetterCallback) (
-            [] (v8::Local<v8::String> property,
-                const Nan::PropertyCallbackInfo<v8::Value>& info) {
+            [] (Local<String> property,
+                const Nan::PropertyCallbackInfo<Value>& info) {
             CCBuffer *obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
             info.GetReturnValue().Set(Nan::New<Number>(obj->length_));
             }),
         nullptr,
-        Nan::New<v8::Value>(Nan::New<Number>(0)),
-        v8::DEFAULT,
-        v8::PropertyAttribute::DontDelete
+        Nan::New<Value>(Nan::New<Number>(0)),
+        DEFAULT,
+        PropertyAttribute::DontDelete
     );
 
     // make function template persistent
@@ -59,9 +59,9 @@ CCBuffer::~CCBuffer()
 }
 
 
-inline Nan::Persistent<v8::FunctionTemplate> & CCBuffer::tmpl()
+Nan::Persistent<FunctionTemplate> & CCBuffer::tmpl()
 {
-    static Nan::Persistent<v8::FunctionTemplate> my_template;
+    static Nan::Persistent<FunctionTemplate> my_template;
     return my_template;
 }
 
@@ -89,7 +89,7 @@ NAN_INDEX_SETTER(CCBuffer::IndexSetter)
 NAN_INDEX_ENUMERATOR(CCBuffer::IndexEnumerator)
 {
     CCBuffer* obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
-    v8::Local<v8::Array> arr(Nan::New<Array>(obj->length_));
+    Local<Array> arr(Nan::New<Array>(obj->length_));
     for (unsigned int i=0; i<obj->length_; ++i)
         arr->Set(i, Nan::New<Number>(i));
     info.GetReturnValue().Set(arr);
@@ -115,10 +115,10 @@ NAN_METHOD(CCBuffer::New)
         info.GetReturnValue().Set(info.This());
     } else {
         int argc = info.Length();
-        v8::Local<v8::Value> argv[argc];
+        Local<Value> argv[argc];
         for (int i=0; i<argc; ++i)
             argv[i] = info[i];
-        v8::Local<v8::Function> ctor = Nan::GetFunction(Nan::New(tmpl())).ToLocalChecked();
+        Local<Function> ctor = Nan::GetFunction(Nan::New(tmpl())).ToLocalChecked();
         info.GetReturnValue().Set(Nan::NewInstance(ctor, argc, argv).ToLocalChecked());
     }
 }
@@ -127,5 +127,6 @@ NAN_METHOD(CCBuffer::New)
 NAN_METHOD(CCBuffer::ToBuffer)
 {
     CCBuffer* obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
-    info.GetReturnValue().Set(Nan::CopyBuffer((const char *) obj->value_, obj->length_).ToLocalChecked());
+    info.GetReturnValue().Set(
+        Nan::CopyBuffer((const char *) obj->value_, obj->length_).ToLocalChecked());
 }

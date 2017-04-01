@@ -21,270 +21,303 @@ unordered_map<string, int> flows;
 unordered_map<string, int> baudrates;
 
 
-void populate_symbol_maps()
+void populate_symbol_maps(Local<Object> all,
+                          Local<Object> iflags,
+                          Local<Object> oflags,
+                          Local<Object> cflags,
+                          Local<Object> lflags,
+                          Local<Object> cc,
+                          Local<Object> jsactions,
+                          Local<Object> jsflushs,
+                          Local<Object> jsflows,
+                          Local<Object> jsbaudrates)
 {
     // no platform switches here, simply test for existance of questionable symbols
     // TODO: explicit checks on linux, OSX, FreeBSD, Solaris, other BSDs
 
     // c_iflag
-    TERMIOS_EXPORT(c_iflag, IGNBRK);
-    TERMIOS_EXPORT(c_iflag, BRKINT);
-    TERMIOS_EXPORT(c_iflag, IGNPAR);
-    TERMIOS_EXPORT(c_iflag, PARMRK);
-    TERMIOS_EXPORT(c_iflag, INPCK);
-    TERMIOS_EXPORT(c_iflag, ISTRIP);
-    TERMIOS_EXPORT(c_iflag, INLCR);
-    TERMIOS_EXPORT(c_iflag, IGNCR);
-    TERMIOS_EXPORT(c_iflag, ICRNL);
+    TERMIOS_EXPORT(c_iflag, iflags, IGNBRK);
+    TERMIOS_EXPORT(c_iflag, iflags, BRKINT);
+    TERMIOS_EXPORT(c_iflag, iflags, IGNPAR);
+    TERMIOS_EXPORT(c_iflag, iflags, PARMRK);
+    TERMIOS_EXPORT(c_iflag, iflags, INPCK);
+    TERMIOS_EXPORT(c_iflag, iflags, ISTRIP);
+    TERMIOS_EXPORT(c_iflag, iflags, INLCR);
+    TERMIOS_EXPORT(c_iflag, iflags, IGNCR);
+    TERMIOS_EXPORT(c_iflag, iflags, ICRNL);
 #if defined(IUCLC)
-    TERMIOS_EXPORT(c_iflag, IUCLC);
+    TERMIOS_EXPORT(c_iflag, iflags, IUCLC);
 #endif
-    TERMIOS_EXPORT(c_iflag, IXON);
-    TERMIOS_EXPORT(c_iflag, IXANY);
-    TERMIOS_EXPORT(c_iflag, IXOFF);
-    TERMIOS_EXPORT(c_iflag, IMAXBEL);
+    TERMIOS_EXPORT(c_iflag, iflags, IXON);
+    TERMIOS_EXPORT(c_iflag, iflags, IXANY);
+    TERMIOS_EXPORT(c_iflag, iflags, IXOFF);
+    TERMIOS_EXPORT(c_iflag, iflags, IMAXBEL);
 #if defined(IUTF8)
-    TERMIOS_EXPORT(c_iflag, IUTF8);
+    TERMIOS_EXPORT(c_iflag, iflags, IUTF8);
 #endif
 
     // c_oflag
-    TERMIOS_EXPORT(c_oflag, OPOST);
+    TERMIOS_EXPORT(c_oflag, oflags, OPOST);
 #if defined(OLCUC)
-    TERMIOS_EXPORT(c_oflag, OLCUC);
+    TERMIOS_EXPORT(c_oflag, oflags, OLCUC);
 #endif
-    TERMIOS_EXPORT(c_oflag, ONLCR);
-    TERMIOS_EXPORT(c_oflag, OCRNL);
-    TERMIOS_EXPORT(c_oflag, ONOCR);
-    TERMIOS_EXPORT(c_oflag, ONLRET);
+    TERMIOS_EXPORT(c_oflag, oflags, ONLCR);
+    TERMIOS_EXPORT(c_oflag, oflags, OCRNL);
+    TERMIOS_EXPORT(c_oflag, oflags, ONOCR);
+    TERMIOS_EXPORT(c_oflag, oflags, ONLRET);
 #if defined(OFILL)
-    TERMIOS_EXPORT(c_oflag, OFILL);
+    TERMIOS_EXPORT(c_oflag, oflags, OFILL);
 #endif
 #if defined(OFDEL)
-    TERMIOS_EXPORT(c_oflag, OFDEL);
+    TERMIOS_EXPORT(c_oflag, oflags, OFDEL);
 #endif
 #if defined(NLDLY)
-    TERMIOS_EXPORT(c_oflag, NLDLY);
+    TERMIOS_EXPORT(c_oflag, oflags, NLDLY);
 #endif
 #if defined(CRDLY)
-    TERMIOS_EXPORT(c_oflag, CRDLY);
+    TERMIOS_EXPORT(c_oflag, oflags, CRDLY);
 #endif
-    TERMIOS_EXPORT(c_oflag, TABDLY);
+    TERMIOS_EXPORT(c_oflag, oflags, TABDLY);
 #if defined(BSDLY)
-    TERMIOS_EXPORT(c_oflag, BSDLY);
+    TERMIOS_EXPORT(c_oflag, oflags, BSDLY);
 #endif
 #if defined(VTDLY)
-    TERMIOS_EXPORT(c_oflag, VTDLY);
+    TERMIOS_EXPORT(c_oflag, oflags, VTDLY);
 #endif
 #if defined(FFDLY)
-    TERMIOS_EXPORT(c_oflag, FFDLY);
+    TERMIOS_EXPORT(c_oflag, oflags, FFDLY);
 #endif
 #if defined(TAB0)
-    TERMIOS_EXPORT(c_oflag, TAB0);
+    TERMIOS_EXPORT(c_oflag, oflags, TAB0);
 #endif
 #if defined(TAB3)
-    TERMIOS_EXPORT(c_oflag, TAB3);
+    TERMIOS_EXPORT(c_oflag, oflags, TAB3);
 #endif
 #if defined(ONOEOT)
-    TERMIOS_EXPORT(c_oflag, ONOEOT);
+    TERMIOS_EXPORT(c_oflag, oflags, ONOEOT);
 #endif
 
     // c_cflag
 #if defined(CBAUD)
-    TERMIOS_EXPORT(c_cflag, CBAUD);
+    TERMIOS_EXPORT(c_cflag, cflags, CBAUD);
 #endif
 #if defined(CBAUDEX)
-    TERMIOS_EXPORT(c_cflag, CBAUDEX);
+    TERMIOS_EXPORT(c_cflag, cflags, CBAUDEX);
 #endif
-    TERMIOS_EXPORT(c_cflag, CSIZE);
-    TERMIOS_EXPORT(c_cflag, CS5);
-    TERMIOS_EXPORT(c_cflag, CS6);
-    TERMIOS_EXPORT(c_cflag, CS7);
-    TERMIOS_EXPORT(c_cflag, CS8);
-    TERMIOS_EXPORT(c_cflag, CSTOPB);
-    TERMIOS_EXPORT(c_cflag, CREAD);
-    TERMIOS_EXPORT(c_cflag, PARENB);
-    TERMIOS_EXPORT(c_cflag, PARODD);
-    TERMIOS_EXPORT(c_cflag, HUPCL);
-    TERMIOS_EXPORT(c_cflag, CLOCAL);
+    TERMIOS_EXPORT(c_cflag, cflags, CSIZE);
+    TERMIOS_EXPORT(c_cflag, cflags, CS5);
+    TERMIOS_EXPORT(c_cflag, cflags, CS6);
+    TERMIOS_EXPORT(c_cflag, cflags, CS7);
+    TERMIOS_EXPORT(c_cflag, cflags, CS8);
+    TERMIOS_EXPORT(c_cflag, cflags, CSTOPB);
+    TERMIOS_EXPORT(c_cflag, cflags, CREAD);
+    TERMIOS_EXPORT(c_cflag, cflags, PARENB);
+    TERMIOS_EXPORT(c_cflag, cflags, PARODD);
+    TERMIOS_EXPORT(c_cflag, cflags, HUPCL);
+    TERMIOS_EXPORT(c_cflag, cflags, CLOCAL);
 #if defined(LOBLK)
-    TERMIOS_EXPORT(c_cflag, LOBLK);
+    TERMIOS_EXPORT(c_cflag, cflags, LOBLK);
 #endif
 #if defined(CIBAUD)
-    TERMIOS_EXPORT(c_cflag, CIBAUD);
+    TERMIOS_EXPORT(c_cflag, cflags, CIBAUD);
 #endif
 #if defined(CMSPAR)
-    TERMIOS_EXPORT(c_cflag, CMSPAR);
+    TERMIOS_EXPORT(c_cflag, cflags, CMSPAR);
 #endif
-    TERMIOS_EXPORT(c_cflag, CRTSCTS);
+    TERMIOS_EXPORT(c_cflag, cflags, CRTSCTS);
 #if defined(CCTS_OFLOW)
-    TERMIOS_EXPORT(c_cflag, CCTS_OFLOW);
+    TERMIOS_EXPORT(c_cflag, cflags, CCTS_OFLOW);
 #endif
 #if defined(CRTS_IFLOW)
-    TERMIOS_EXPORT(c_cflag, CRTS_IFLOW);
+    TERMIOS_EXPORT(c_cflag, cflags, CRTS_IFLOW);
 #endif
 #if defined(MDMBUF)
-    TERMIOS_EXPORT(c_cflag, MDMBUF);
+    TERMIOS_EXPORT(c_cflag, cflags, MDMBUF);
 #endif
 
     // c_lflag
-    TERMIOS_EXPORT(c_lflag, ISIG);
-    TERMIOS_EXPORT(c_lflag, ICANON);
+    TERMIOS_EXPORT(c_lflag, lflags, ISIG);
+    TERMIOS_EXPORT(c_lflag, lflags, ICANON);
 #if defined(XCASE)
-    TERMIOS_EXPORT(c_lflag, XCASE);
+    TERMIOS_EXPORT(c_lflag, lflags, XCASE);
 #endif
-    TERMIOS_EXPORT(c_lflag, ECHO);
-    TERMIOS_EXPORT(c_lflag, ECHOE);
+    TERMIOS_EXPORT(c_lflag, lflags, ECHO);
+    TERMIOS_EXPORT(c_lflag, lflags, ECHOE);
 #if defined(ECHOK)
-    TERMIOS_EXPORT(c_lflag, ECHOK);
+    TERMIOS_EXPORT(c_lflag, lflags, ECHOK);
 #endif
-    TERMIOS_EXPORT(c_lflag, ECHONL);
-    TERMIOS_EXPORT(c_lflag, ECHOCTL);
-    TERMIOS_EXPORT(c_lflag, ECHOPRT);
-    TERMIOS_EXPORT(c_lflag, ECHOKE);
+    TERMIOS_EXPORT(c_lflag, lflags, ECHONL);
+    TERMIOS_EXPORT(c_lflag, lflags, ECHOCTL);
+    TERMIOS_EXPORT(c_lflag, lflags, ECHOPRT);
+    TERMIOS_EXPORT(c_lflag, lflags, ECHOKE);
 #if defined(DEFECHO)
-    TERMIOS_EXPORT(c_lflag, DEFECHO);
+    TERMIOS_EXPORT(c_lflag, lflags, DEFECHO);
 #endif
-    TERMIOS_EXPORT(c_lflag, FLUSHO);
-    TERMIOS_EXPORT(c_lflag, NOFLSH);
-    TERMIOS_EXPORT(c_lflag, TOSTOP);
-    TERMIOS_EXPORT(c_lflag, PENDIN);
-    TERMIOS_EXPORT(c_lflag, IEXTEN);
+    TERMIOS_EXPORT(c_lflag, lflags, FLUSHO);
+    TERMIOS_EXPORT(c_lflag, lflags, NOFLSH);
+    TERMIOS_EXPORT(c_lflag, lflags, TOSTOP);
+    TERMIOS_EXPORT(c_lflag, lflags, PENDIN);
+    TERMIOS_EXPORT(c_lflag, lflags, IEXTEN);
 #if defined(ALTWERASE)
-    TERMIOS_EXPORT(c_lflag, ALTWERASE);
+    TERMIOS_EXPORT(c_lflag, lflags, ALTWERASE);
 #endif
 #if defined(EXTPROC)
-    TERMIOS_EXPORT(c_lflag, EXTPROC);
+    TERMIOS_EXPORT(c_lflag, lflags, EXTPROC);
 #endif
 #if defined(NOKERNINFO)
-    TERMIOS_EXPORT(c_lflag, NOKERNINFO);
+    TERMIOS_EXPORT(c_lflag, lflags, NOKERNINFO);
 #endif
 
     // c_cc
-    TERMIOS_EXPORT(c_cc, VDISCARD);
+    TERMIOS_EXPORT(c_cc, cc, VDISCARD);
 #if defined(VDSUSP)
-    TERMIOS_EXPORT(c_cc, VDSUSP);
+    TERMIOS_EXPORT(c_cc, cc, VDSUSP);
 #endif
-    TERMIOS_EXPORT(c_cc, VEOF);
-    TERMIOS_EXPORT(c_cc, VEOL);
-    TERMIOS_EXPORT(c_cc, VEOL2);
-    TERMIOS_EXPORT(c_cc, VERASE);
-    TERMIOS_EXPORT(c_cc, VINTR);
-    TERMIOS_EXPORT(c_cc, VKILL);
-    TERMIOS_EXPORT(c_cc, VLNEXT);
-    TERMIOS_EXPORT(c_cc, VMIN);
-    TERMIOS_EXPORT(c_cc, VQUIT);
-    TERMIOS_EXPORT(c_cc, VREPRINT);
-    TERMIOS_EXPORT(c_cc, VSTART);
+    TERMIOS_EXPORT(c_cc, cc, VEOF);
+    TERMIOS_EXPORT(c_cc, cc, VEOL);
+    TERMIOS_EXPORT(c_cc, cc, VEOL2);
+    TERMIOS_EXPORT(c_cc, cc, VERASE);
+    TERMIOS_EXPORT(c_cc, cc, VINTR);
+    TERMIOS_EXPORT(c_cc, cc, VKILL);
+    TERMIOS_EXPORT(c_cc, cc, VLNEXT);
+    TERMIOS_EXPORT(c_cc, cc, VMIN);
+    TERMIOS_EXPORT(c_cc, cc, VQUIT);
+    TERMIOS_EXPORT(c_cc, cc, VREPRINT);
+    TERMIOS_EXPORT(c_cc, cc, VSTART);
 #if defined(VSTATUS)
-    TERMIOS_EXPORT(c_cc, VSTATUS);
+    TERMIOS_EXPORT(c_cc, cc, VSTATUS);
 #endif
-    TERMIOS_EXPORT(c_cc, VSTOP);
-    TERMIOS_EXPORT(c_cc, VSUSP);
+    TERMIOS_EXPORT(c_cc, cc, VSTOP);
+    TERMIOS_EXPORT(c_cc, cc, VSUSP);
 #if defined(VSWTCH)
-    TERMIOS_EXPORT(c_cc, VSWTCH);
+    TERMIOS_EXPORT(c_cc, cc, VSWTCH);
 #endif
-    TERMIOS_EXPORT(c_cc, VTIME);
-    TERMIOS_EXPORT(c_cc, VWERASE);
+    TERMIOS_EXPORT(c_cc, cc, VTIME);
+    TERMIOS_EXPORT(c_cc, cc, VWERASE);
 
     // optional_actions for tcsetattr
-    TERMIOS_EXPORT(actions, TCSANOW);
-    TERMIOS_EXPORT(actions, TCSADRAIN);
-    TERMIOS_EXPORT(actions, TCSAFLUSH);
+    TERMIOS_EXPORT(actions, jsactions, TCSANOW);
+    TERMIOS_EXPORT(actions, jsactions, TCSADRAIN);
+    TERMIOS_EXPORT(actions, jsactions, TCSAFLUSH);
 #if defined(TCSASOFT)
-    TERMIOS_EXPORT(actions, TCSASOFT);
+    TERMIOS_EXPORT(actions, jsactions, TCSASOFT);
 #endif
 
     // tcflush queue_selectors
-    TERMIOS_EXPORT(flushs, TCIFLUSH);
-    TERMIOS_EXPORT(flushs, TCOFLUSH);
-    TERMIOS_EXPORT(flushs, TCIOFLUSH);
+    TERMIOS_EXPORT(flushs, jsflushs, TCIFLUSH);
+    TERMIOS_EXPORT(flushs, jsflushs, TCOFLUSH);
+    TERMIOS_EXPORT(flushs, jsflushs, TCIOFLUSH);
 
     // tcflow actions
-    TERMIOS_EXPORT(flows, TCOOFF);
-    TERMIOS_EXPORT(flows, TCOON);
-    TERMIOS_EXPORT(flows, TCIOFF);
-    TERMIOS_EXPORT(flows, TCION);
+    TERMIOS_EXPORT(flows, jsflows, TCOOFF);
+    TERMIOS_EXPORT(flows, jsflows, TCOON);
+    TERMIOS_EXPORT(flows, jsflows, TCIOFF);
+    TERMIOS_EXPORT(flows, jsflows, TCION);
 
     // baud rates
-    TERMIOS_EXPORT(baudrates, B0);
-    TERMIOS_EXPORT(baudrates, B50);
-    TERMIOS_EXPORT(baudrates, B75);
-    TERMIOS_EXPORT(baudrates, B110);
-    TERMIOS_EXPORT(baudrates, B134);
-    TERMIOS_EXPORT(baudrates, B150);
-    TERMIOS_EXPORT(baudrates, B200);
-    TERMIOS_EXPORT(baudrates, B300);
-    TERMIOS_EXPORT(baudrates, B600);
-    TERMIOS_EXPORT(baudrates, B1200);
-    TERMIOS_EXPORT(baudrates, B1800);
-    TERMIOS_EXPORT(baudrates, B2400);
-    TERMIOS_EXPORT(baudrates, B4800);
-    TERMIOS_EXPORT(baudrates, B9600);
-    TERMIOS_EXPORT(baudrates, B19200);
-    TERMIOS_EXPORT(baudrates, B38400);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B0);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B50);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B75);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B110);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B134);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B150);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B200);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B300);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B600);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B1200);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B1800);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B2400);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B4800);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B9600);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B19200);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B38400);
 #if defined(B7200)
-    TERMIOS_EXPORT(baudrates, B7200);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B7200);
 #endif
 #if defined(B14400)
-    TERMIOS_EXPORT(baudrates, B14400);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B14400);
 #endif
 #if defined(B28800)
-    TERMIOS_EXPORT(baudrates, B28800);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B28800);
 #endif
-    TERMIOS_EXPORT(baudrates, B57600);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B57600);
 #if defined(B76800)
-    TERMIOS_EXPORT(baudrates, B76800);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B76800);
 #endif
-    TERMIOS_EXPORT(baudrates, B115200);
-    TERMIOS_EXPORT(baudrates, B230400);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B115200);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B230400);
 #if defined(B460800)
-    TERMIOS_EXPORT(baudrates, B460800);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B460800);
 #endif
 #if defined(B500000)
-    TERMIOS_EXPORT(baudrates, B500000);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B500000);
 #endif
 #if defined(B576000)
-    TERMIOS_EXPORT(baudrates, B576000);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B576000);
 #endif
 #if defined(B921600)
-    TERMIOS_EXPORT(baudrates, B921600);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B921600);
 #endif
 #if defined(B1000000)
-    TERMIOS_EXPORT(baudrates, B1000000);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B1000000);
 #endif
 #if defined(B1152000)
-    TERMIOS_EXPORT(baudrates, B1152000);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B1152000);
 #endif
 #if defined(B1500000)
-    TERMIOS_EXPORT(baudrates, B1500000);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B1500000);
 #endif
 #if defined(B2000000)
-    TERMIOS_EXPORT(baudrates, B2000000);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B2000000);
 #endif
 #if defined(B2500000)
-    TERMIOS_EXPORT(baudrates, B2500000);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B2500000);
 #endif
 #if defined(B3000000)
-    TERMIOS_EXPORT(baudrates, B3000000);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B3000000);
 #endif
 #if defined(B3500000)
-    TERMIOS_EXPORT(baudrates, B3500000);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B3500000);
 #endif
 #if defined(B4000000)
-    TERMIOS_EXPORT(baudrates, B4000000);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, B4000000);
 #endif
 #if defined(EXTA)
-    TERMIOS_EXPORT(baudrates, EXTA);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, EXTA);
 #endif
 #if defined(EXTB)
-    TERMIOS_EXPORT(baudrates, EXTB);
+    TERMIOS_EXPORT(baudrates, jsbaudrates, EXTB);
 #endif
 }
 
 
 NAN_MODULE_INIT(init) {
     Nan::HandleScope scope;
-    populate_symbol_maps();
+
+    // symbols
+    Local<Object> all = Nan::New<Object>();
+    Local<Object> iflags = Nan::New<Object>();
+    Local<Object> oflags = Nan::New<Object>();
+    Local<Object> cflags = Nan::New<Object>();
+    Local<Object> lflags = Nan::New<Object>();
+    Local<Object> cc = Nan::New<Object>();
+    Local<Object> jsactions = Nan::New<Object>();
+    Local<Object> jsflushs = Nan::New<Object>();
+    Local<Object> jsflows = Nan::New<Object>();
+    Local<Object> jsbaudrates = Nan::New<Object>();
+    populate_symbol_maps(
+        all, iflags, oflags, cflags, lflags,
+        cc, jsactions, jsflushs, jsflows, jsbaudrates);
+    MODULE_EXPORT("ALL_SYMBOLS", all);
+    MODULE_EXPORT("IFLAGS", iflags);
+    MODULE_EXPORT("OFLAGS", oflags);
+    MODULE_EXPORT("CFLAGS", cflags);
+    MODULE_EXPORT("LFLAGS", lflags);
+    MODULE_EXPORT("CC", cc);
+    MODULE_EXPORT("ACTION", jsactions);
+    MODULE_EXPORT("FLUSH", jsflushs);
+    MODULE_EXPORT("FLOW", jsflows);
+    MODULE_EXPORT("BAUD", jsbaudrates);
 
     // helper functions
     MODULE_EXPORT("isatty", Nan::New<FunctionTemplate>(Isatty)->GetFunction());

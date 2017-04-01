@@ -53,7 +53,7 @@ NAN_METHOD(Tcgetattr)
     if (info.Length() != 2
           || !info[0]->IsNumber()
           || !info[1]->IsObject()
-          || !Nan::New(CTermios::getTemplate())->HasInstance(info[1])) {
+          || !CTermios::ctorTemplate()->HasInstance(info[1])) {
         return Nan::ThrowError("Usage: tcgetattr(fd, ctermios)");
     }
     struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[1]->ToObject())->data();
@@ -72,10 +72,10 @@ NAN_METHOD(Tcsetattr)
           || !info[0]->IsNumber()
           || !info[1]->IsString()
           || !info[2]->IsObject()
-          || !Nan::New(CTermios::getTemplate())->HasInstance(info[2])) {
+          || !CTermios::ctorTemplate()->HasInstance(info[2])) {
         return Nan::ThrowError("Usage: tcsetattr(fd, action, ctermios)");
     }
-    string action_str(*static_cast<v8::String::Utf8Value>(info[1]->ToString()));
+    string action_str(*static_cast<String::Utf8Value>(info[1]->ToString()));
     unordered_map<string, int>::iterator it;
     it = actions.find(action_str);
     if (it == actions.end())
@@ -119,7 +119,7 @@ NAN_METHOD(Tcflush)
   if (info.Length() != 2 || !info[0]->IsNumber() || !info[1]->IsString()) {
     return Nan::ThrowError("usage: termios.tcflush(fd, queue_selector)");
   }
-  string queue_str(*static_cast<v8::String::Utf8Value>(info[1]->ToString()));
+  string queue_str(*static_cast<String::Utf8Value>(info[1]->ToString()));
   unordered_map<string, int>::iterator it;
   it = flushs.find(queue_str);
   if (it == flushs.end())
@@ -135,7 +135,7 @@ NAN_METHOD(Tcflow)
   if (info.Length() != 2 || !info[0]->IsNumber() || !info[1]->IsString()) {
     return Nan::ThrowError("usage: termios.tcflow(fd, action)");
   }
-  string action_str(*static_cast<v8::String::Utf8Value>(info[1]->ToString()));
+  string action_str(*static_cast<String::Utf8Value>(info[1]->ToString()));
   unordered_map<string, int>::iterator it;
   it = flows.find(action_str);
   if (it == flows.end())

@@ -14,11 +14,11 @@
 class CCBuffer : public Nan::ObjectWrap {
 friend CTermios;
 public:
-    static v8::Local<v8::FunctionTemplate> init();
+    static Local<FunctionTemplate> init();
 private:
     explicit CCBuffer(cc_t*, int);
     ~CCBuffer();
-    static inline Nan::Persistent<v8::FunctionTemplate> & tmpl();
+    static Nan::Persistent<FunctionTemplate> & tmpl();
 
     static NAN_INDEX_GETTER(IndexGetter);
     static NAN_INDEX_SETTER(IndexSetter);

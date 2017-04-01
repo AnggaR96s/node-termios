@@ -27,7 +27,8 @@ NAN_METHOD(Tcflow);
 
 
 
-/* missing from termios.h linux
+/* missing from termios.h
+TODO: implement missing functions
 speed_t cfgetispeed(const struct termios *termios_p);
 speed_t cfgetospeed(const struct termios *termios_p);
 int cfsetispeed(struct termios *termios_p, speed_t speed);
@@ -42,8 +43,6 @@ pid_t tcgetsid(int fd);             // needs #include <sys/types.h> under FreeBS
 
 pid_t tcgetpgrp(int fd);            // needs #include <sys/types.h> under FreeBSD
 int tcsetpgrp(int fd, pid_t pgrp);  // needs #include <sys/types.h> under FreeBSD
-
-TCSASOFT - OSX extension
 */
 
 

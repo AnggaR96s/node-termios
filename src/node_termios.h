@@ -30,8 +30,13 @@ extern unordered_map<string, int> flushs;
 extern unordered_map<string, int> flows;
 extern unordered_map<string, int> baudrates;
 
-#define TERMIOS_EXPORT(o, s) (o[#s] = s)
-#define MODULE_EXPORT(name, symbol) (Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), symbol))
+#define TERMIOS_EXPORT(o, j, s)                                               \
+o[#s] = s;                                                                    \
+Nan::Set(all, Nan::New<String>(#s).ToLocalChecked(),Nan::New<Number>(s)); \
+Nan::Set(j, Nan::New<String>(#s).ToLocalChecked(),Nan::New<Number>(s))
+
+#define MODULE_EXPORT(name, symbol)                                           \
+Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), symbol)
 
 
 

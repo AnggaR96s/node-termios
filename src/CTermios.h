@@ -12,20 +12,21 @@
 
 class CTermios : public Nan::ObjectWrap {
 public:
-    static v8::Local<v8::FunctionTemplate> init();
-    static Nan::Persistent<v8::FunctionTemplate> & getTemplate() { return tmpl(); }
+    static Local<FunctionTemplate> init();
+    static Local<FunctionTemplate> ctorTemplate() { return Nan::New(tmpl()); }
     struct termios* data() { return &value_; }
 private:
     explicit CTermios(struct termios *value);
     ~CTermios();
-    static Nan::Persistent<v8::FunctionTemplate> & tmpl();
+    static Nan::Persistent<FunctionTemplate> & tmpl();
 
     // JS methods
     static NAN_METHOD(New);
     static NAN_METHOD(ToBuffer);
 
+    // data
     struct termios value_;
-    Nan::Persistent<v8::Object> ccbuffer;
+    Nan::Persistent<Object> ccbuffer;
 };
 
 #endif // CTERMIOS_H
