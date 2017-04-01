@@ -18,10 +18,6 @@ public:
 private:
     explicit CCBuffer(cc_t*, int);
     ~CCBuffer();
-
-    static NAN_METHOD(New);
-    static NAN_METHOD(ToBuffer);
-    static inline Nan::Persistent<v8::Function> & constructor();
     static inline Nan::Persistent<v8::FunctionTemplate> & tmpl();
 
     static NAN_INDEX_GETTER(IndexGetter);
@@ -29,6 +25,10 @@ private:
     static NAN_INDEX_ENUMERATOR(IndexEnumerator);
     static NAN_INDEX_DELETER(IndexDeleter);
     static NAN_INDEX_QUERY(IndexQuery);
+
+    // JS methods
+    static NAN_METHOD(New);
+    static NAN_METHOD(ToBuffer);
 
     cc_t *value_;
     unsigned int length_;

@@ -18,7 +18,6 @@ v8::Local<v8::FunctionTemplate> CTermios::init() {
     Nan::SetPrototypeMethod(tpl, "toBuffer", ToBuffer);
 
     // register properties
-
     Nan::SetAccessor(
         tpl->InstanceTemplate(),
         Nan::New<String>("c_cc").ToLocalChecked(),
@@ -31,7 +30,8 @@ v8::Local<v8::FunctionTemplate> CTermios::init() {
             nullptr,
         Nan::New<v8::Value>(Nan::New<Number>(0)),
         v8::DEFAULT,
-        static_cast<v8::PropertyAttribute>(v8::PropertyAttribute::DontDelete | v8::PropertyAttribute::ReadOnly)
+        static_cast<v8::PropertyAttribute>(
+          v8::PropertyAttribute::DontDelete | v8::PropertyAttribute::ReadOnly)
     );
     Nan::SetAccessor(
       tpl->InstanceTemplate(),
@@ -114,7 +114,7 @@ v8::Local<v8::FunctionTemplate> CTermios::init() {
       v8::PropertyAttribute::DontDelete
     );
 
-    constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
+    // make function template persistent
     tmpl().Reset(tpl);
 
     return tpl;
@@ -125,7 +125,7 @@ CTermios::CTermios(struct termios *value = nullptr)
   : value_()
 {
     if (value)
-        memcpy(&value_, value, sizeof(*value));
+        memcpy(&value_, value, sizeof(value_));
 }
 
 
@@ -135,44 +135,52 @@ CTermios::~CTermios()
 }
 
 
+Nan::Persistent<v8::FunctionTemplate> & CTermios::tmpl()
+{
+    static Nan::Persistent<v8::FunctionTemplate> my_template;
+    return my_template;
+}
+
+
 NAN_METHOD(CTermios::New)
 {
     if (info.IsConstructCall()) {
 
-      // allow other Termios object as parameter
-      struct termios *old = nullptr;
-      if (info.Length() > 1)
-        return Nan::ThrowError("to many arguments");
-      if (!info[0]->IsUndefined()) {
-        if (!info[0]->IsObject() || !Nan::New(CTermios::tmpl())->HasInstance(info[0]))
-          return Nan::ThrowError("first argument must be CTermios type");
-        old = &Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->value_;
-      }
+        // allow other Termios object as parameter
+        struct termios *old = nullptr;
+        if (info.Length() > 1)
+            return Nan::ThrowError("to many arguments");
+        if (info.Length() == 1) {
+            if (info[0]->IsNumber()) {
+                // FIXME test for isatty
+                struct termios fromfd = termios();
+                old = &fromfd;
+                tcgetattr(info[0]->Uint32Value(), old);
+            } else if (info[0]->IsObject() && Nan::New(CTermios::tmpl())->HasInstance(info[0])) {
+                old = &Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->value_;
+            } else
+                return Nan::ThrowError("first argument must be CTermios or file descriptor");
+        }
+        CTermios *obj = new CTermios(old);
 
-            struct termios t = termios();
-            tcgetattr(0, &t);
-            CTermios *obj = new CTermios(&t);
+        // set c_cc as CCBuffer
+        v8::Local<v8::Function> ctor_buf = Nan::GetFunction(CCBuffer::init()).ToLocalChecked();
+        v8::Local<v8::Object> buf = Nan::NewInstance(ctor_buf).ToLocalChecked();
+        obj->ccbuffer.Reset(buf);
+        // CCBuffer values
+        CCBuffer *cbuf = Nan::ObjectWrap::Unwrap<CCBuffer>(buf);
+        cbuf->value_ = obj->value_.c_cc;
+        cbuf->length_ = NCCS;
 
-      //Termios *obj = new Termios(old);
-      //obj->iflag = new IFlag(&obj->value_.c_iflag);
-
-      // set c_cc as CCBuffer
-      v8::Local<v8::Function> ctor_buf = Nan::GetFunction(CCBuffer::init()).ToLocalChecked();
-      v8::Local<v8::Object> buf = Nan::NewInstance(ctor_buf).ToLocalChecked();
-      obj->ccbuffer.Reset(buf);
-      // CCBuffer values
-      CCBuffer *cbuf = Nan::ObjectWrap::Unwrap<CCBuffer>(buf);
-      cbuf->value_ = obj->value_.c_cc;
-      cbuf->length_ = NCCS;
-
-      obj->Wrap(info.This());
-      info.GetReturnValue().Set(info.This());
+        obj->Wrap(info.This());
+        info.GetReturnValue().Set(info.This());
     } else {
-      int argc = info.Length();
-      v8::Local<v8::Value> argv[argc];
-      for (int i=0; i<argc; ++i)
-        argv[i] = info[i];
-      info.GetReturnValue().Set(Nan::New(constructor())->NewInstance(argc, argv));
+        int argc = info.Length();
+        v8::Local<v8::Value> argv[argc];
+        for (int i=0; i<argc; ++i)
+            argv[i] = info[i];
+        v8::Local<v8::Function> ctor = Nan::GetFunction(Nan::New(tmpl())).ToLocalChecked();
+        info.GetReturnValue().Set(Nan::NewInstance(ctor, argc, argv).ToLocalChecked());
     }
 }
 
@@ -180,19 +188,6 @@ NAN_METHOD(CTermios::New)
 NAN_METHOD(CTermios::ToBuffer)
 {
     CTermios* obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
-    info.GetReturnValue().Set(Nan::CopyBuffer((const char *) &obj->value_, sizeof(obj->value_)).ToLocalChecked());
-}
-
-
-inline Nan::Persistent<v8::Function> & CTermios::constructor()
-{
-    static Nan::Persistent<v8::Function> my_constructor;
-    return my_constructor;
-}
-
-
-inline Nan::Persistent<v8::FunctionTemplate> & CTermios::tmpl()
-{
-    static Nan::Persistent<v8::FunctionTemplate> my_template;
-    return my_template;
+    info.GetReturnValue().Set(
+      Nan::CopyBuffer((const char *) &obj->value_, sizeof(obj->value_)).ToLocalChecked());
 }

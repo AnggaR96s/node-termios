@@ -19,18 +19,19 @@ using namespace std;
 
 typedef unordered_map<string, tcflag_t> flag_t;
 
-static flag_t c_iflag;
-static flag_t c_oflag;
-static flag_t c_cflag;
-static flag_t c_lflag;
-static unordered_map<string, unsigned int> c_cc;
-static unordered_map<string, int> actions;
-static unordered_map<string, int> flushs;
-static unordered_map<string, int> flows;
+// symbol maps
+extern flag_t c_iflag;
+extern flag_t c_oflag;
+extern flag_t c_cflag;
+extern flag_t c_lflag;
+extern unordered_map<string, unsigned int> c_cc;
+extern unordered_map<string, int> actions;
+extern unordered_map<string, int> flushs;
+extern unordered_map<string, int> flows;
+extern unordered_map<string, int> baudrates;
 
 #define TERMIOS_EXPORT(o, s) (o[#s] = s)
-
-
+#define MODULE_EXPORT(name, symbol) (Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), symbol))
 
 
 
