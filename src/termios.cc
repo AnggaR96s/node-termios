@@ -652,6 +652,108 @@ private:
   tcflag_t *value_;
 };
 
+class CCBuffer: public Nan::ObjectWrap {
+friend Termios;
+public:
+  static v8::Local<v8::FunctionTemplate> init() {
+    v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
+    tpl->SetClassName(Nan::New("CCBuffer").ToLocalChecked());
+    tpl->InstanceTemplate()->SetInternalFieldCount(1);
+
+    Nan::SetPrototypeMethod(tpl, "toBuffer", ToBuffer);
+
+    Nan::SetIndexedPropertyHandler(
+      tpl->InstanceTemplate(),
+      IndexGetter,
+      IndexSetter,
+      IndexQuery,
+      IndexDeleter,
+      IndexEnumerator
+    );
+    Nan::SetAccessor(
+          tpl->InstanceTemplate(),
+          Nan::New<String>("length").ToLocalChecked(),
+          (Nan::GetterCallback) (
+            [] (v8::Local<v8::String> property,
+                const Nan::PropertyCallbackInfo<v8::Value>& info) {
+              CCBuffer *obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
+              info.GetReturnValue().Set(Nan::New<Number>(obj->length_));
+            }),
+          nullptr,
+          Nan::New<v8::Value>(Nan::New<Number>(0)),
+          v8::DEFAULT,
+          v8::PropertyAttribute::DontDelete
+        );
+
+    constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
+    tmpl().Reset(tpl);
+    return tpl;
+  }
+private:
+  explicit CCBuffer(cc_t *value, int length) : value_(value), length_(length) {}
+  ~CCBuffer() {}
+
+  static NAN_METHOD(New) {
+    if (info.IsConstructCall()) {
+      CCBuffer *obj = new CCBuffer(nullptr, 0);
+      obj->Wrap(info.This());
+      info.GetReturnValue().Set(info.This());
+    } else {
+      int argc = info.Length();
+      v8::Local<v8::Value> argv[argc];
+      for (int i=0; i<argc; ++i)
+        argv[i] = info[i];
+      info.GetReturnValue().Set(Nan::New(constructor())->NewInstance(argc, argv));
+    }
+  }
+  static inline Nan::Persistent<v8::Function> & constructor() {
+    static Nan::Persistent<v8::Function> my_constructor;
+    return my_constructor;
+  }
+  static inline Nan::Persistent<v8::FunctionTemplate> & tmpl() {
+    static Nan::Persistent<v8::FunctionTemplate> my_template;
+    return my_template;
+  }
+  static NAN_METHOD(ToBuffer) {
+    CCBuffer* obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
+    info.GetReturnValue().Set(Nan::CopyBuffer((const char *) obj->value_, obj->length_).ToLocalChecked());
+  }
+
+  static NAN_INDEX_GETTER(IndexGetter) {
+    CCBuffer* obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
+    if (index >= obj->length_)
+      return;
+    info.GetReturnValue().Set(Nan::New<Number>(obj->value_[index]));
+  }
+
+  static NAN_INDEX_SETTER(IndexSetter) {
+    CCBuffer* obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
+    if (index < obj->length_ && value->IsNumber()) {
+      obj->value_[index] = (cc_t) value->Uint32Value();
+      info.GetReturnValue().Set(Nan::New<Number>(obj->value_[index]));
+    } else
+      info.GetReturnValue().SetUndefined();
+  }
+
+  static NAN_INDEX_ENUMERATOR(IndexEnumerator) {
+    CCBuffer* obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
+    v8::Local<v8::Array> arr(Nan::New<Array>(obj->length_));
+    for (int i=0; i<obj->length_; ++i)
+      arr->Set(i, Nan::New<Number>(i));
+    info.GetReturnValue().Set(arr);
+  }
+
+  static NAN_INDEX_DELETER(IndexDeleter) {
+    info.GetReturnValue().Set(Nan::New<Boolean>(0));
+  }
+
+  static NAN_INDEX_QUERY(IndexQuery) {
+    // TODO
+  }
+
+  cc_t *value_;
+  unsigned int length_;
+};
 
 
 class Termios : public Nan::ObjectWrap {
@@ -659,31 +761,134 @@ class Termios : public Nan::ObjectWrap {
   static v8::Local<v8::FunctionTemplate> init() {
     v8::Local<v8::FunctionTemplate> TermiosTpl = Nan::New<v8::FunctionTemplate>(New);
     TermiosTpl->SetClassName(Nan::New("Termios").ToLocalChecked());
-    TermiosTpl->InstanceTemplate()->SetInternalFieldCount(2);
+    TermiosTpl->InstanceTemplate()->SetInternalFieldCount(3);
 
     // register methods
     Nan::SetPrototypeMethod(TermiosTpl, "toBuffer", ToBuffer);
 
     // register properties
+
     Nan::SetAccessor(
-        TermiosTpl->InstanceTemplate(),
-        Nan::New<String>("c_iflag").ToLocalChecked(),
-        (Nan::GetterCallback) (
-          [] (v8::Local<v8::String> property,
-              const Nan::PropertyCallbackInfo<v8::Value>& info) {
-            Termios* obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
-            info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_iflag));
-          }),
-        (Nan::SetterCallback) (
-          [] (v8::Local<v8::String> property,
-              v8::Local<v8::Value> value,
-              const Nan::PropertyCallbackInfo<void>& info) {
-            Termios* obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
-            obj->value_.c_iflag = (tcflag_t) value->Uint32Value();
-          }),
-        Nan::New<v8::Value>(Nan::New<Number>(0)),
-        v8::DEFAULT,
-        v8::PropertyAttribute::DontDelete
+      TermiosTpl->InstanceTemplate(),
+      Nan::New<String>("c_ccc").ToLocalChecked(),
+      (Nan::GetterCallback) (
+        [] (v8::Local<v8::String> property,
+            const Nan::PropertyCallbackInfo<v8::Value>& info) {
+          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+          info.GetReturnValue().Set(Nan::New(obj->ccbuffer));
+        }),
+        nullptr,
+      //(Nan::SetterCallback) (
+      //  [] (v8::Local<v8::String> property,
+      //      v8::Local<v8::Value> value,
+      //      const Nan::PropertyCallbackInfo<void>& info) {
+      //    Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+      //    obj->value_.c_lflag = (tcflag_t) value->Uint32Value();
+      //  }),
+      Nan::New<v8::Value>(Nan::New<Number>(0)),
+      v8::DEFAULT,
+      static_cast<v8::PropertyAttribute>(v8::PropertyAttribute::DontDelete | v8::PropertyAttribute::ReadOnly)
+    );
+    Nan::SetAccessor(
+      TermiosTpl->InstanceTemplate(),
+      Nan::New<String>("c_cc").ToLocalChecked(),
+      (Nan::GetterCallback) (
+        [] (v8::Local<v8::String> property,
+            const Nan::PropertyCallbackInfo<v8::Value>& info) {
+          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+          info.GetReturnValue().Set(Nan::CopyBuffer((const char *)obj->value_.c_cc, NCCS).ToLocalChecked());
+        }),
+      //(Nan::SetterCallback) (
+      //  [] (v8::Local<v8::String> property,
+      //      v8::Local<v8::Value> value,
+      //      const Nan::PropertyCallbackInfo<void>& info) {
+      //    Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+      //    obj->value_.c_lflag = (tcflag_t) value->Uint32Value();
+      //  }),
+      nullptr,
+      Nan::New<v8::Value>(Nan::New<Number>(0)),
+      v8::DEFAULT,
+      static_cast<v8::PropertyAttribute>(v8::PropertyAttribute::DontDelete | v8::PropertyAttribute::ReadOnly)
+    );
+    Nan::SetAccessor(
+      TermiosTpl->InstanceTemplate(),
+      Nan::New<String>("c_lflag").ToLocalChecked(),
+      (Nan::GetterCallback) (
+        [] (v8::Local<v8::String> property,
+            const Nan::PropertyCallbackInfo<v8::Value>& info) {
+          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+          info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_lflag));
+        }),
+      (Nan::SetterCallback) (
+        [] (v8::Local<v8::String> property,
+            v8::Local<v8::Value> value,
+            const Nan::PropertyCallbackInfo<void>& info) {
+          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+          obj->value_.c_lflag = (tcflag_t) value->Uint32Value();
+        }),
+      Nan::New<v8::Value>(Nan::New<Number>(0)),
+      v8::DEFAULT,
+      v8::PropertyAttribute::DontDelete
+    );
+    Nan::SetAccessor(
+      TermiosTpl->InstanceTemplate(),
+      Nan::New<String>("c_cflag").ToLocalChecked(),
+      (Nan::GetterCallback) (
+        [] (v8::Local<v8::String> property,
+            const Nan::PropertyCallbackInfo<v8::Value>& info) {
+          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+          info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_cflag));
+        }),
+      (Nan::SetterCallback) (
+        [] (v8::Local<v8::String> property,
+            v8::Local<v8::Value> value,
+            const Nan::PropertyCallbackInfo<void>& info) {
+          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+          obj->value_.c_cflag = (tcflag_t) value->Uint32Value();
+        }),
+      Nan::New<v8::Value>(Nan::New<Number>(0)),
+      v8::DEFAULT,
+      v8::PropertyAttribute::DontDelete
+    );
+    Nan::SetAccessor(
+      TermiosTpl->InstanceTemplate(),
+      Nan::New<String>("c_oflag").ToLocalChecked(),
+      (Nan::GetterCallback) (
+        [] (v8::Local<v8::String> property,
+            const Nan::PropertyCallbackInfo<v8::Value>& info) {
+          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+          info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_oflag));
+        }),
+      (Nan::SetterCallback) (
+        [] (v8::Local<v8::String> property,
+            v8::Local<v8::Value> value,
+            const Nan::PropertyCallbackInfo<void>& info) {
+          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+          obj->value_.c_oflag = (tcflag_t) value->Uint32Value();
+        }),
+      Nan::New<v8::Value>(Nan::New<Number>(0)),
+      v8::DEFAULT,
+      v8::PropertyAttribute::DontDelete
+    );
+    Nan::SetAccessor(
+      TermiosTpl->InstanceTemplate(),
+      Nan::New<String>("c_iflag").ToLocalChecked(),
+      (Nan::GetterCallback) (
+        [] (v8::Local<v8::String> property,
+            const Nan::PropertyCallbackInfo<v8::Value>& info) {
+          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+          info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_iflag));
+        }),
+      (Nan::SetterCallback) (
+        [] (v8::Local<v8::String> property,
+            v8::Local<v8::Value> value,
+            const Nan::PropertyCallbackInfo<void>& info) {
+          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
+          obj->value_.c_iflag = (tcflag_t) value->Uint32Value();
+        }),
+      Nan::New<v8::Value>(Nan::New<Number>(0)),
+      v8::DEFAULT,
+      v8::PropertyAttribute::DontDelete
     );
 
     constructor().Reset(Nan::GetFunction(TermiosTpl).ToLocalChecked());
@@ -697,10 +902,13 @@ class Termios : public Nan::ObjectWrap {
     if (value)
       memcpy(&value_, value, sizeof(*value));
   }
-  ~Termios() {}
+  ~Termios() {
+    ccbuffer.Reset();
+  }
 
   static NAN_METHOD(New) {
     if (info.IsConstructCall()) {
+
       // allow other Termios object as parameter
       struct termios *old = nullptr;
       if (info.Length() > 1)
@@ -710,8 +918,23 @@ class Termios : public Nan::ObjectWrap {
           return Nan::ThrowError("first argument must be Termios type");
         old = &Nan::ObjectWrap::Unwrap<Termios>(info[0]->ToObject())->value_;
       }
-      Termios *obj = new Termios(old);
+
+            struct termios t = termios();
+            tcgetattr(0, &t);
+            Termios *obj = new Termios(&t);
+
+      //Termios *obj = new Termios(old);
       obj->iflag = new IFlag(&obj->value_.c_iflag);
+
+      // set c_cc as CCBuffer
+      v8::Local<v8::Function> ctor_buf = Nan::GetFunction(CCBuffer::init()).ToLocalChecked();
+      v8::Local<v8::Object> buf = Nan::NewInstance(ctor_buf).ToLocalChecked();
+      obj->ccbuffer.Reset(buf);
+      // CCBuffer values
+      CCBuffer *cbuf = Nan::ObjectWrap::Unwrap<CCBuffer>(buf);
+      cbuf->value_ = obj->value_.c_cc;
+      cbuf->length_ = NCCS;
+
       obj->Wrap(info.This());
       info.GetReturnValue().Set(info.This());
     } else {
@@ -737,22 +960,13 @@ class Termios : public Nan::ObjectWrap {
     return my_template;
   }
 
-  static void IFlagGetter(v8::Local<v8::String> property,
-                          const Nan::PropertyCallbackInfo<v8::Value>& info) {
-    Termios* obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
-    info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_iflag));
-  }
-
-  static void IFlagSetter(v8::Local<v8::String> property,
-                          v8::Local<v8::Value> value,
-                          const Nan::PropertyCallbackInfo<v8::Value>& info) {
-    Termios* obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
-    obj->value_.c_iflag = (tcflag_t) value->Uint32Value();
-  }
-
   struct termios value_;
   IFlag *iflag;
+  //CCBuffer *ccbuffer;
+  //v8::Local<v8::Object> ccbuffer;
+  Nan::Persistent<v8::Object> ccbuffer;
 };
+
 
 //NODE_MODULE(termios, Termios::Init)
 
@@ -795,6 +1009,8 @@ NAN_MODULE_INIT(init) {
   // Termios object
   Nan::Set(target, Nan::New("Termios").ToLocalChecked(),
     Nan::GetFunction(Termios::init()).ToLocalChecked());
+  Nan::Set(target, Nan::New("CCBuffer").ToLocalChecked(),
+    Nan::GetFunction(CCBuffer::init()).ToLocalChecked());
 }
 
 NODE_MODULE(termios, init)
