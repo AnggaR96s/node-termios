@@ -1,27 +1,10 @@
-#include "nan.h"
-#include <termios.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
 
-using namespace node;
-using namespace v8;
-using namespace std;
+#include "node_termios.h"
 
-#include <unordered_map>
 
-typedef unordered_map<string, tcflag_t> flag_t;
-
-static flag_t c_iflag;
-static flag_t c_oflag;
-static flag_t c_cflag;
-static flag_t c_lflag;
-static unordered_map<string, unsigned int> c_cc;
-static unordered_map<string, int> actions;
-static unordered_map<string, int> flushs;
-static unordered_map<string, int> flows;
-
-#define TERMIOS_EXPORT(o, s) (o[#s] = s)
 
 
 /*

@@ -2,7 +2,7 @@
   "targets": [
     {
       "target_name": "termios",
-      "sources": [ "src/termios.cc" ],
+      "sources": [ "src/CTermios.cpp", "src/CCBuffer.cpp", "src/node_termios.cpp" ],
       "include_dirs" : ['<!(node -e "require(\'nan\')")']
     }
   ]
