@@ -770,7 +770,7 @@ class Termios : public Nan::ObjectWrap {
 
     Nan::SetAccessor(
       TermiosTpl->InstanceTemplate(),
-      Nan::New<String>("c_ccc").ToLocalChecked(),
+      Nan::New<String>("c_cc").ToLocalChecked(),
       (Nan::GetterCallback) (
         [] (v8::Local<v8::String> property,
             const Nan::PropertyCallbackInfo<v8::Value>& info) {
@@ -778,34 +778,6 @@ class Termios : public Nan::ObjectWrap {
           info.GetReturnValue().Set(Nan::New(obj->ccbuffer));
         }),
         nullptr,
-      //(Nan::SetterCallback) (
-      //  [] (v8::Local<v8::String> property,
-      //      v8::Local<v8::Value> value,
-      //      const Nan::PropertyCallbackInfo<void>& info) {
-      //    Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
-      //    obj->value_.c_lflag = (tcflag_t) value->Uint32Value();
-      //  }),
-      Nan::New<v8::Value>(Nan::New<Number>(0)),
-      v8::DEFAULT,
-      static_cast<v8::PropertyAttribute>(v8::PropertyAttribute::DontDelete | v8::PropertyAttribute::ReadOnly)
-    );
-    Nan::SetAccessor(
-      TermiosTpl->InstanceTemplate(),
-      Nan::New<String>("c_cc").ToLocalChecked(),
-      (Nan::GetterCallback) (
-        [] (v8::Local<v8::String> property,
-            const Nan::PropertyCallbackInfo<v8::Value>& info) {
-          Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
-          info.GetReturnValue().Set(Nan::CopyBuffer((const char *)obj->value_.c_cc, NCCS).ToLocalChecked());
-        }),
-      //(Nan::SetterCallback) (
-      //  [] (v8::Local<v8::String> property,
-      //      v8::Local<v8::Value> value,
-      //      const Nan::PropertyCallbackInfo<void>& info) {
-      //    Termios *obj = Nan::ObjectWrap::Unwrap<Termios>(info.Holder());
-      //    obj->value_.c_lflag = (tcflag_t) value->Uint32Value();
-      //  }),
-      nullptr,
       Nan::New<v8::Value>(Nan::New<Number>(0)),
       v8::DEFAULT,
       static_cast<v8::PropertyAttribute>(v8::PropertyAttribute::DontDelete | v8::PropertyAttribute::ReadOnly)
@@ -1006,7 +978,7 @@ NAN_MODULE_INIT(init) {
 
   _create_termios_symbol_maps();
 
-  // Termios object
+  // objects
   Nan::Set(target, Nan::New("Termios").ToLocalChecked(),
     Nan::GetFunction(Termios::init()).ToLocalChecked());
   Nan::Set(target, Nan::New("CCBuffer").ToLocalChecked(),
