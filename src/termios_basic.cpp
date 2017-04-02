@@ -64,25 +64,19 @@ NAN_METHOD(Tcgetattr)
     info.GetReturnValue().SetUndefined();
 }
 
-// FIXME: use int values instead of strings
+
 NAN_METHOD(Tcsetattr)
 {
     Nan::HandleScope scope;
     if (info.Length() != 3
           || !info[0]->IsNumber()
-          || !info[1]->IsString()
+          || !info[1]->IsNumber()
           || !info[2]->IsObject()
           || !CTermios::IsInstance(info[2])) {
         return Nan::ThrowError("Usage: tcsetattr(fd, action, ctermios)");
     }
-    string action_str(*static_cast<String::Utf8Value>(info[1]->ToString()));
-    unordered_map<string, int>::iterator it;
-    it = actions.find(action_str);
-    if (it == actions.end())
-        return Nan::ThrowError("action must be one of 'TCSANOW', 'TCSADRAIN', 'TCSAFLUSH'");
-    int action = it->second;
     struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[2]->ToObject())->data();
-    if (tcsetattr(info[0]->IntegerValue(), action, t)) {
+    if (tcsetattr(info[0]->IntegerValue(), info[1]->IntegerValue(), t)) {
         string error(strerror(errno));
         return Nan::ThrowError((string("tcsetattr failed - ") + error).c_str());
     }
@@ -120,21 +114,15 @@ NAN_METHOD(Tcdrain)
 }
 
 
-// FIXME: use int values instead of strings
 NAN_METHOD(Tcflush)
 {
     Nan::HandleScope scope;
     if (info.Length() != 2
           || !info[0]->IsNumber()
-          || !info[1]->IsString()) {
+          || !info[1]->IsNumber()) {
         return Nan::ThrowError("usage: termios.tcflush(fd, queue_selector)");
     }
-    string queue_str(*static_cast<String::Utf8Value>(info[1]->ToString()));
-    unordered_map<string, int>::iterator it;
-    it = flushs.find(queue_str);
-    if (it == flushs.end())
-        return Nan::ThrowError("action must be one of 'TCIFLUSH', 'TCOFLUSH', 'TCIOFLUSH'");
-    if (tcflush(info[0]->IntegerValue(), it->second)) {
+    if (tcflush(info[0]->IntegerValue(), info[1]->IntegerValue())) {
         string error(strerror(errno));
         return Nan::ThrowError((string("tcflush failed - ") + error).c_str());
     }
@@ -142,21 +130,15 @@ NAN_METHOD(Tcflush)
 }
 
 
-// FIXME: use int values instead of strings
 NAN_METHOD(Tcflow)
 {
     Nan::HandleScope scope;
     if (info.Length() != 2
           || !info[0]->IsNumber()
-          || !info[1]->IsString()) {
+          || !info[1]->IsNumber()) {
         return Nan::ThrowError("usage: termios.tcflow(fd, action)");
     }
-    string action_str(*static_cast<String::Utf8Value>(info[1]->ToString()));
-    unordered_map<string, int>::iterator it;
-    it = flows.find(action_str);
-    if (it == flows.end())
-        return Nan::ThrowError("action must be one of 'TCOOFF', 'TCOON', 'TCIOFF', 'TCION'");
-    if (tcflow(info[0]->IntegerValue(), it->second)) {
+    if (tcflow(info[0]->IntegerValue(), info[1]->IntegerValue())) {
         string error(strerror(errno));
         return Nan::ThrowError((string("tcflow failed - ") + error).c_str());
     }

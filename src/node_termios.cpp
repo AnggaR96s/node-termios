@@ -11,6 +11,7 @@
 #include "CCBuffer.h"
 
 // symbol maps
+/*
 flag_t c_iflag;
 flag_t c_oflag;
 flag_t c_cflag;
@@ -20,6 +21,7 @@ unordered_map<string, int> actions;
 unordered_map<string, int> flushs;
 unordered_map<string, int> flows;
 unordered_map<string, int> baudrates;
+*/
 
 
 void populate_symbol_maps(Local<Object> all,

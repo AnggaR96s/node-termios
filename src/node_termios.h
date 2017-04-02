@@ -15,11 +15,13 @@ using namespace node;
 using namespace v8;
 using namespace std;
 
+/*
 #include <unordered_map>
 
 typedef unordered_map<string, tcflag_t> flag_t;
 
 // symbol maps
+
 extern flag_t c_iflag;
 extern flag_t c_oflag;
 extern flag_t c_cflag;
@@ -29,10 +31,10 @@ extern unordered_map<string, int> actions;
 extern unordered_map<string, int> flushs;
 extern unordered_map<string, int> flows;
 extern unordered_map<string, int> baudrates;
+*/
 
 #define TERMIOS_EXPORT(o, j, s)                                               \
-o[#s] = s;                                                                    \
-Nan::Set(all, Nan::New<String>(#s).ToLocalChecked(),Nan::New<Number>(s)); \
+Nan::Set(all, Nan::New<String>(#s).ToLocalChecked(),Nan::New<Number>(s));     \
 Nan::Set(j, Nan::New<String>(#s).ToLocalChecked(),Nan::New<Number>(s))
 
 #define MODULE_EXPORT(name, symbol)                                           \
