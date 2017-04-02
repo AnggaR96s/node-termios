@@ -12,7 +12,7 @@
 #include "CTermios.h"
 
 class CCBuffer : public Nan::ObjectWrap {
-friend CTermios;
+friend class CTermios;
 public:
     static Local<FunctionTemplate> init();
 private:
@@ -27,6 +27,7 @@ private:
     static NAN_INDEX_ENUMERATOR(IndexEnumerator);
     static NAN_INDEX_DELETER(IndexDeleter);
     static NAN_INDEX_QUERY(IndexQuery);
+    static NAN_GETTER(Length_Getter);
 
     // JS methods
     static NAN_METHOD(New);

@@ -16,8 +16,8 @@ NAN_METHOD(Isatty)
     }
     int tty = isatty(info[0]->IntegerValue());
     if (!tty && errno == EBADF) {
-        string error(strerror(errno));
-        return Nan::ThrowError((string("isatty failed - ") + error).c_str());
+        std::string error(strerror(errno));
+        return Nan::ThrowError((std::string("isatty failed - ") + error).c_str());
     }
     info.GetReturnValue().Set(Nan::New<Boolean>(tty));
 }
@@ -58,8 +58,8 @@ NAN_METHOD(Tcgetattr)
     }
     struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[1]->ToObject())->data();
     if (tcgetattr(info[0]->IntegerValue(), t)) {
-        string error(strerror(errno));
-        return Nan::ThrowError((string("tcgetattr failed - ") + error).c_str());
+        std::string error(strerror(errno));
+        return Nan::ThrowError((std::string("tcgetattr failed - ") + error).c_str());
     }
     info.GetReturnValue().SetUndefined();
 }
@@ -77,8 +77,8 @@ NAN_METHOD(Tcsetattr)
     }
     struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[2]->ToObject())->data();
     if (tcsetattr(info[0]->IntegerValue(), info[1]->IntegerValue(), t)) {
-        string error(strerror(errno));
-        return Nan::ThrowError((string("tcsetattr failed - ") + error).c_str());
+        std::string error(strerror(errno));
+        return Nan::ThrowError((std::string("tcsetattr failed - ") + error).c_str());
     }
     info.GetReturnValue().SetUndefined();
 }
@@ -93,8 +93,8 @@ NAN_METHOD(Tcsendbreak)
         return Nan::ThrowError("usage: termios.tcsendbreak(fd, duration)");
     }
     if (tcsendbreak(info[0]->IntegerValue(), info[1]->IntegerValue())) {
-        string error(strerror(errno));
-        return Nan::ThrowError((string("tcsendbreak failed - ") + error).c_str());
+        std::string error(strerror(errno));
+        return Nan::ThrowError((std::string("tcsendbreak failed - ") + error).c_str());
     }
     info.GetReturnValue().SetUndefined();
 }
@@ -107,8 +107,8 @@ NAN_METHOD(Tcdrain)
         return Nan::ThrowError("usage: termios.tcdrain(fd)");
     }
     if (tcdrain(info[0]->IntegerValue())) {
-        string error(strerror(errno));
-        return Nan::ThrowError((string("tcdrain failed - ") + error).c_str());
+        std::string error(strerror(errno));
+        return Nan::ThrowError((std::string("tcdrain failed - ") + error).c_str());
     }
     info.GetReturnValue().SetUndefined();
 }
@@ -123,8 +123,8 @@ NAN_METHOD(Tcflush)
         return Nan::ThrowError("usage: termios.tcflush(fd, queue_selector)");
     }
     if (tcflush(info[0]->IntegerValue(), info[1]->IntegerValue())) {
-        string error(strerror(errno));
-        return Nan::ThrowError((string("tcflush failed - ") + error).c_str());
+        std::string error(strerror(errno));
+        return Nan::ThrowError((std::string("tcflush failed - ") + error).c_str());
     }
     info.GetReturnValue().SetUndefined();
 }
@@ -139,8 +139,8 @@ NAN_METHOD(Tcflow)
         return Nan::ThrowError("usage: termios.tcflow(fd, action)");
     }
     if (tcflow(info[0]->IntegerValue(), info[1]->IntegerValue())) {
-        string error(strerror(errno));
-        return Nan::ThrowError((string("tcflow failed - ") + error).c_str());
+        std::string error(strerror(errno));
+        return Nan::ThrowError((std::string("tcflow failed - ") + error).c_str());
     }
     info.GetReturnValue().SetUndefined();
 }
@@ -183,8 +183,8 @@ NAN_METHOD(Cfsetispeed)
     }
     struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->data();
     if (cfsetispeed(t, info[1]->IntegerValue())) {
-        string error(strerror(errno));
-        return Nan::ThrowError((string("cfsetispeed failed - ") + error).c_str());
+        std::string error(strerror(errno));
+        return Nan::ThrowError((std::string("cfsetispeed failed - ") + error).c_str());
     }
     info.GetReturnValue().SetUndefined();
 }
@@ -201,8 +201,8 @@ NAN_METHOD(Cfsetospeed)
     }
     struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->data();
     if (cfsetospeed(t, info[1]->IntegerValue())) {
-        string error(strerror(errno));
-        return Nan::ThrowError((string("cfsetospeed failed - ") + error).c_str());
+        std::string error(strerror(errno));
+        return Nan::ThrowError((std::string("cfsetospeed failed - ") + error).c_str());
     }
     info.GetReturnValue().SetUndefined();
 }

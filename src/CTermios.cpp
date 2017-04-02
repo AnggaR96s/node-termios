@@ -8,6 +8,7 @@
 #include "CTermios.h"
 #include "CCBuffer.h"
 #include <unistd.h>
+#include <errno.h>
 
 
 Local<FunctionTemplate> CTermios::init() {
@@ -22,54 +23,27 @@ Local<FunctionTemplate> CTermios::init() {
     Nan::SetAccessor(
         tpl->InstanceTemplate(),
         Nan::New<String>("c_cc").ToLocalChecked(),
-        (Nan::GetterCallback) (
-            [] (Local<String> property,
-                const Nan::PropertyCallbackInfo<Value>& info) {
-                CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
-            info.GetReturnValue().Set(Nan::New(obj->ccbuffer));
-            }),
-            0,
+        CC_Getter,
+        0,
         Nan::New<Value>(Nan::New<Number>(0)),
         DEFAULT,
         static_cast<PropertyAttribute>(
-          PropertyAttribute::DontDelete | PropertyAttribute::ReadOnly)
+            PropertyAttribute::DontDelete | PropertyAttribute::ReadOnly)
     );
     Nan::SetAccessor(
-      tpl->InstanceTemplate(),
-      Nan::New<String>("c_lflag").ToLocalChecked(),
-      (Nan::GetterCallback) (
-        [] (Local<String> property,
-            const Nan::PropertyCallbackInfo<Value>& info) {
-          CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
-          info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_lflag));
-        }),
-      (Nan::SetterCallback) (
-        [] (Local<String> property,
-            Local<Value> value,
-            const Nan::PropertyCallbackInfo<void>& info) {
-          CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
-          obj->value_.c_lflag = (tcflag_t) value->Uint32Value();
-        }),
-      Nan::New<Value>(Nan::New<Number>(0)),
-      DEFAULT,
-      PropertyAttribute::DontDelete
+        tpl->InstanceTemplate(),
+        Nan::New<String>("c_lflag").ToLocalChecked(),
+        LFlag_Getter,
+        LFlag_Setter,
+        Nan::New<Value>(Nan::New<Number>(0)),
+        DEFAULT,
+        PropertyAttribute::DontDelete
     );
     Nan::SetAccessor(
       tpl->InstanceTemplate(),
       Nan::New<String>("c_cflag").ToLocalChecked(),
-      (Nan::GetterCallback) (
-        [] (Local<String> property,
-            const Nan::PropertyCallbackInfo<Value>& info) {
-          CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
-          info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_cflag));
-        }),
-      (Nan::SetterCallback) (
-        [] (Local<String> property,
-            Local<Value> value,
-            const Nan::PropertyCallbackInfo<void>& info) {
-          CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
-          obj->value_.c_cflag = (tcflag_t) value->Uint32Value();
-        }),
+      CFlag_Getter,
+      CFlag_Setter,
       Nan::New<Value>(Nan::New<Number>(0)),
       DEFAULT,
       PropertyAttribute::DontDelete
@@ -77,19 +51,8 @@ Local<FunctionTemplate> CTermios::init() {
     Nan::SetAccessor(
       tpl->InstanceTemplate(),
       Nan::New<String>("c_oflag").ToLocalChecked(),
-      (Nan::GetterCallback) (
-        [] (Local<String> property,
-            const Nan::PropertyCallbackInfo<Value>& info) {
-          CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
-          info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_oflag));
-        }),
-      (Nan::SetterCallback) (
-        [] (Local<String> property,
-            Local<Value> value,
-            const Nan::PropertyCallbackInfo<void>& info) {
-          CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
-          obj->value_.c_oflag = (tcflag_t) value->Uint32Value();
-        }),
+      OFlag_Getter,
+      OFlag_Setter,
       Nan::New<Value>(Nan::New<Number>(0)),
       DEFAULT,
       PropertyAttribute::DontDelete
@@ -97,19 +60,8 @@ Local<FunctionTemplate> CTermios::init() {
     Nan::SetAccessor(
       tpl->InstanceTemplate(),
       Nan::New<String>("c_iflag").ToLocalChecked(),
-      (Nan::GetterCallback) (
-        [] (Local<String> property,
-            const Nan::PropertyCallbackInfo<Value>& info) {
-          CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
-          info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_iflag));
-        }),
-      (Nan::SetterCallback) (
-        [] (Local<String> property,
-            Local<Value> value,
-            const Nan::PropertyCallbackInfo<void>& info) {
-          CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
-          obj->value_.c_iflag = (tcflag_t) value->Uint32Value();
-        }),
+      IFlag_Getter,
+      IFlag_Setter,
       Nan::New<Value>(Nan::New<Number>(0)),
       DEFAULT,
       PropertyAttribute::DontDelete
@@ -160,14 +112,14 @@ NAN_METHOD(CTermios::New)
             if (info[0]->IsNumber()) {
                 int fd = info[0]->IntegerValue();
                 if (!isatty(fd)) {
-                    string error(strerror(errno));
-                    return Nan::ThrowError((string("fd is no tty - ") + error).c_str());
+                    std::string error(strerror(errno));
+                    return Nan::ThrowError((std::string("fd is no tty - ") + error).c_str());
                 }
                 struct termios fromfd = termios();
                 old = &fromfd;
                 if (tcgetattr(fd, old)) {
-                    string error(strerror(errno));
-                    return Nan::ThrowError((string("tcgetattr failed - ") + error).c_str());
+                    std::string error(strerror(errno));
+                    return Nan::ThrowError((std::string("tcgetattr failed - ") + error).c_str());
                 }
             } else if (info[0]->IsObject() && IsInstance(info[0])) {
                 old = &Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->value_;
@@ -194,7 +146,7 @@ NAN_METHOD(CTermios::New)
         for (int i=0; i<argc; ++i)
             argv[i] = info[i];
         Local<Function> ctor = Nan::GetFunction(ctorTemplate()).ToLocalChecked();
-        MaybeLocal<Object> instance(Nan::NewInstance(ctor, argc, argv));
+        Nan::MaybeLocal<Object> instance(Nan::NewInstance(ctor, argc, argv));
 
         // ctor call can fail with an exception
         // we have to test for an empty return value
@@ -212,4 +164,67 @@ NAN_METHOD(CTermios::ToBuffer)
     CTermios* obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
     info.GetReturnValue().Set(
       Nan::CopyBuffer((const char *) &obj->value_, sizeof(obj->value_)).ToLocalChecked());
+}
+
+
+NAN_GETTER(CTermios::CC_Getter)
+{
+    CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
+    info.GetReturnValue().Set(Nan::New(obj->ccbuffer));
+}
+
+
+NAN_GETTER(CTermios::LFlag_Getter)
+{
+    CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
+    info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_lflag));
+}
+
+
+NAN_GETTER(CTermios::CFlag_Getter)
+{
+    CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
+    info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_cflag));
+}
+
+
+NAN_GETTER(CTermios::OFlag_Getter)
+{
+    CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
+    info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_oflag));
+}
+
+
+NAN_GETTER(CTermios::IFlag_Getter)
+{
+    CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
+    info.GetReturnValue().Set(Nan::New<Number>(obj->value_.c_iflag));
+}
+
+
+NAN_SETTER(CTermios::LFlag_Setter)
+{
+    CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
+    obj->value_.c_lflag = (tcflag_t) value->Uint32Value();
+}
+
+
+NAN_SETTER(CTermios::CFlag_Setter)
+{
+    CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
+    obj->value_.c_cflag = (tcflag_t) value->Uint32Value();
+}
+
+
+NAN_SETTER(CTermios::OFlag_Setter)
+{
+    CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
+    obj->value_.c_oflag = (tcflag_t) value->Uint32Value();
+}
+
+
+NAN_SETTER(CTermios::IFlag_Setter)
+{
+    CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
+    obj->value_.c_iflag = (tcflag_t) value->Uint32Value();
 }

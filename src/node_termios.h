@@ -13,33 +13,15 @@
 
 using namespace node;
 using namespace v8;
-using namespace std;
 
-/*
-#include <unordered_map>
 
-typedef unordered_map<string, tcflag_t> flag_t;
+// macro for symbol export
+#define TERMIOS_EXPORT(o, js_obj, sym)                                        \
+Nan::Set(all, Nan::New<String>(#sym).ToLocalChecked(),Nan::New<Number>(sym)); \
+Nan::Set(js_obj, Nan::New<String>(#sym).ToLocalChecked(),Nan::New<Number>(sym))
 
-// symbol maps
-
-extern flag_t c_iflag;
-extern flag_t c_oflag;
-extern flag_t c_cflag;
-extern flag_t c_lflag;
-extern unordered_map<string, unsigned int> c_cc;
-extern unordered_map<string, int> actions;
-extern unordered_map<string, int> flushs;
-extern unordered_map<string, int> flows;
-extern unordered_map<string, int> baudrates;
-*/
-
-#define TERMIOS_EXPORT(o, j, s)                                               \
-Nan::Set(all, Nan::New<String>(#s).ToLocalChecked(),Nan::New<Number>(s));     \
-Nan::Set(j, Nan::New<String>(#s).ToLocalChecked(),Nan::New<Number>(s))
-
+// macro for module export
 #define MODULE_EXPORT(name, symbol)                                           \
 Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), symbol)
-
-
 
 #endif // NODE_TERMIOS_H

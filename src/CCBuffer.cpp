@@ -29,12 +29,7 @@ Local<FunctionTemplate> CCBuffer::init()
     Nan::SetAccessor(
         tpl->InstanceTemplate(),
         Nan::New<String>("length").ToLocalChecked(),
-        (Nan::GetterCallback) (
-            [] (Local<String> property,
-                const Nan::PropertyCallbackInfo<Value>& info) {
-            CCBuffer *obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
-            info.GetReturnValue().Set(Nan::New<Number>(obj->length_));
-            }),
+        Length_Getter,
         0,
         Nan::New<Value>(Nan::New<Number>(0)),
         DEFAULT,
@@ -104,6 +99,13 @@ NAN_INDEX_DELETER(CCBuffer::IndexDeleter)
 NAN_INDEX_QUERY(CCBuffer::IndexQuery)
 {
     // TODO
+}
+
+
+NAN_GETTER(CCBuffer::Length_Getter)
+{
+    CCBuffer *obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
+    info.GetReturnValue().Set(Nan::New<Number>(obj->length_));
 }
 
 

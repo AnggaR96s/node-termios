@@ -25,6 +25,16 @@ private:
     static NAN_METHOD(New);
     static NAN_METHOD(ToBuffer);
 
+    static NAN_GETTER(CC_Getter);
+    static NAN_GETTER(LFlag_Getter);
+    static NAN_GETTER(CFlag_Getter);
+    static NAN_GETTER(OFlag_Getter);
+    static NAN_GETTER(IFlag_Getter);
+    static NAN_SETTER(LFlag_Setter);
+    static NAN_SETTER(CFlag_Setter);
+    static NAN_SETTER(OFlag_Setter);
+    static NAN_SETTER(IFlag_Setter);
+
     // data
     struct termios value_;
     Nan::Persistent<Object> ccbuffer;

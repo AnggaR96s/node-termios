@@ -10,19 +10,6 @@
 #include "CTermios.h"
 #include "CCBuffer.h"
 
-// symbol maps
-/*
-flag_t c_iflag;
-flag_t c_oflag;
-flag_t c_cflag;
-flag_t c_lflag;
-unordered_map<string, unsigned int> c_cc;
-unordered_map<string, int> actions;
-unordered_map<string, int> flushs;
-unordered_map<string, int> flows;
-unordered_map<string, int> baudrates;
-*/
-
 
 void populate_symbol_maps(Local<Object> all,
                           Local<Object> iflags,
