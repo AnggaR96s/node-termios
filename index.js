@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = require('./build/Release/termios.node');
 const s = module.exports.ALL_SYMBOLS;
 const t = module.exports;

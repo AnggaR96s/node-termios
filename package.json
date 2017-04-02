@@ -1,11 +1,17 @@
 {
   "name": "node-termios",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "terminal settings for node",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "termios",
+    "tty",
+    "terminal",
+    "console"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/jerch/node-termios.git"
