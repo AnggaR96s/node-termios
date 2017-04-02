@@ -18,7 +18,9 @@ public:
 private:
     explicit CCBuffer(cc_t*, int);
     ~CCBuffer();
-    static Nan::Persistent<FunctionTemplate> & tmpl();
+    static Nan::Persistent<FunctionTemplate>& tmpl();
+    static Local<FunctionTemplate> ctorTemplate() { return Nan::New(tmpl()); }
+    static bool IsInstance(Local<Value> v) { return ctorTemplate()->HasInstance(v); }
 
     static NAN_INDEX_GETTER(IndexGetter);
     static NAN_INDEX_SETTER(IndexSetter);

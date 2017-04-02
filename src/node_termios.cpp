@@ -8,6 +8,7 @@
 #include "node_termios.h"
 #include "termios_basic.h"
 #include "CTermios.h"
+#include "CCBuffer.h"
 
 // symbol maps
 flag_t c_iflag;
@@ -295,6 +296,8 @@ NAN_MODULE_INIT(init) {
     Nan::HandleScope scope;
 
     // symbols
+    // The symbols are grouped together by responsibility.
+    // Additonally all known symbols can be found in `ALL_SYMBOLS`.
     Local<Object> all = Nan::New<Object>();
     Local<Object> iflags = Nan::New<Object>();
     Local<Object> oflags = Nan::New<Object>();
@@ -319,7 +322,7 @@ NAN_MODULE_INIT(init) {
     MODULE_EXPORT("FLOW", jsflows);
     MODULE_EXPORT("BAUD", jsbaudrates);
 
-    // helper functions
+    // helper functions - useful functions related to ttys
     MODULE_EXPORT("isatty", Nan::New<FunctionTemplate>(Isatty)->GetFunction());
     MODULE_EXPORT("ttyname", Nan::New<FunctionTemplate>(Ttyname)->GetFunction());
     MODULE_EXPORT("ptsname", Nan::New<FunctionTemplate>(Ptsname)->GetFunction());
@@ -333,7 +336,11 @@ NAN_MODULE_INIT(init) {
     MODULE_EXPORT("tcflow", Nan::New<FunctionTemplate>(Tcflow)->GetFunction());
 
     // objects
+    // NOTE: `SomeClass::init()` must be called prior usage in JS
+    //       to create the ctor function in memory.
+    //       For not exported classes simply call the init method here.
     MODULE_EXPORT("CTermios", Nan::GetFunction(CTermios::init()).ToLocalChecked());
+    MODULE_EXPORT("CCBuffer", Nan::GetFunction(CCBuffer::init()).ToLocalChecked());
 }
 
 NODE_MODULE(termios, init)

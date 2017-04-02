@@ -14,11 +14,12 @@ class CTermios : public Nan::ObjectWrap {
 public:
     static Local<FunctionTemplate> init();
     static Local<FunctionTemplate> ctorTemplate() { return Nan::New(tmpl()); }
+    static bool IsInstance(Local<Value> v) { return ctorTemplate()->HasInstance(v); }
     struct termios* data() { return &value_; }
 private:
     explicit CTermios(struct termios *value);
     ~CTermios();
-    static Nan::Persistent<FunctionTemplate> & tmpl();
+    static Nan::Persistent<FunctionTemplate>& tmpl();
 
     // JS methods
     static NAN_METHOD(New);

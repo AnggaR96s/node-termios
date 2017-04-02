@@ -7,6 +7,7 @@
  */
 #include "CTermios.h"
 #include "CCBuffer.h"
+#include <unistd.h>
 
 
 Local<FunctionTemplate> CTermios::init() {
@@ -145,42 +146,62 @@ Nan::Persistent<FunctionTemplate> & CTermios::tmpl()
 NAN_METHOD(CTermios::New)
 {
     if (info.IsConstructCall()) {
-
-        // allow other Termios object as parameter
+        /*
+            ctor call - `new CTermios(arg)`
+            supported arguments:
+                <none>          - initialize termios struct with zeros
+                ctermios object - initialize termios struct from other object
+                number          - initialize termios struct from fd
+        */
         struct termios *old = nullptr;
         if (info.Length() > 1)
             return Nan::ThrowError("to many arguments");
         if (info.Length() == 1) {
             if (info[0]->IsNumber()) {
-                // FIXME test for isatty
+                int fd = info[0]->IntegerValue();
+                if (!isatty(fd)) {
+                    string error(strerror(errno));
+                    return Nan::ThrowError((string("fd is no tty - ") + error).c_str());
+                }
                 struct termios fromfd = termios();
                 old = &fromfd;
-                tcgetattr(info[0]->Uint32Value(), old);
-            } else if (info[0]->IsObject() && ctorTemplate()->HasInstance(info[0])) {
+                if (tcgetattr(fd, old)) {
+                    string error(strerror(errno));
+                    return Nan::ThrowError((string("tcgetattr failed - ") + error).c_str());
+                }
+            } else if (info[0]->IsObject() && IsInstance(info[0])) {
                 old = &Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->value_;
             } else
                 return Nan::ThrowError("first argument must be CTermios or file descriptor");
         }
         CTermios *obj = new CTermios(old);
 
-        // set c_cc as CCBuffer
-        Local<Function> ctor_buf = Nan::GetFunction(CCBuffer::init()).ToLocalChecked();
+        // create CCBuffer instance for property `c_cc`
+        // make the CCBuffer object persistent
+        Local<Function> ctor_buf = Nan::GetFunction(CCBuffer::ctorTemplate()).ToLocalChecked();
         Local<Object> buf = Nan::NewInstance(ctor_buf).ToLocalChecked();
-        obj->ccbuffer.Reset(buf);
-        // CCBuffer values
         CCBuffer *cbuf = Nan::ObjectWrap::Unwrap<CCBuffer>(buf);
         cbuf->value_ = obj->value_.c_cc;
         cbuf->length_ = NCCS;
+        obj->ccbuffer.Reset(buf);
 
         obj->Wrap(info.This());
         info.GetReturnValue().Set(info.This());
     } else {
+        // silently transit `CTermios()` to `new CTermios()`
         int argc = info.Length();
         Local<Value> argv[argc];
         for (int i=0; i<argc; ++i)
             argv[i] = info[i];
         Local<Function> ctor = Nan::GetFunction(ctorTemplate()).ToLocalChecked();
-        info.GetReturnValue().Set(Nan::NewInstance(ctor, argc, argv).ToLocalChecked());
+        MaybeLocal<Object> instance(Nan::NewInstance(ctor, argc, argv));
+
+        // ctor call can fail with an exception
+        // we have to test for an empty return value
+        if (instance.IsEmpty())
+            info.GetReturnValue().SetUndefined();
+        else
+            info.GetReturnValue().Set(instance.ToLocalChecked());
     }
 }
 
