@@ -31,7 +31,7 @@ Local<FunctionTemplate> CCBuffer::init()
         Nan::New<String>("length").ToLocalChecked(),
         Length_Getter,
         0,
-        Nan::New<v8::Value>(Nan::New<Number>(0)),
+        Local<Value>(),
         DEFAULT,
         PropertyAttribute::DontDelete
     );

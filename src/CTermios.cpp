@@ -35,7 +35,7 @@ Local<FunctionTemplate> CTermios::init() {
         Nan::New<String>("c_lflag").ToLocalChecked(),
         LFlag_Getter,
         LFlag_Setter,
-        Nan::New<v8::Value>(Nan::New<Number>(0)),
+        Local<Value>(),
         DEFAULT,
         PropertyAttribute::DontDelete
     );
@@ -44,7 +44,7 @@ Local<FunctionTemplate> CTermios::init() {
       Nan::New<String>("c_cflag").ToLocalChecked(),
       CFlag_Getter,
       CFlag_Setter,
-      Nan::New<v8::Value>(Nan::New<Number>(0)),
+      Local<Value>(),
       DEFAULT,
       PropertyAttribute::DontDelete
     );
@@ -53,7 +53,7 @@ Local<FunctionTemplate> CTermios::init() {
       Nan::New<String>("c_oflag").ToLocalChecked(),
       OFlag_Getter,
       OFlag_Setter,
-      Nan::New<v8::Value>(Nan::New<Number>(0)),
+      Local<Value>(),
       DEFAULT,
       PropertyAttribute::DontDelete
     );
@@ -62,7 +62,7 @@ Local<FunctionTemplate> CTermios::init() {
       Nan::New<String>("c_iflag").ToLocalChecked(),
       IFlag_Getter,
       IFlag_Setter,
-      Nan::New<v8::Value>(Nan::New<Number>(0)),
+      Local<Value>(),
       DEFAULT,
       PropertyAttribute::DontDelete
     );
