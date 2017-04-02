@@ -35,7 +35,7 @@ Local<FunctionTemplate> CCBuffer::init()
             CCBuffer *obj = Nan::ObjectWrap::Unwrap<CCBuffer>(info.Holder());
             info.GetReturnValue().Set(Nan::New<Number>(obj->length_));
             }),
-        nullptr,
+        0,
         Nan::New<Value>(Nan::New<Number>(0)),
         DEFAULT,
         PropertyAttribute::DontDelete
@@ -110,16 +110,17 @@ NAN_INDEX_QUERY(CCBuffer::IndexQuery)
 NAN_METHOD(CCBuffer::New)
 {
     if (info.IsConstructCall()) {
-        CCBuffer *obj = new CCBuffer(nullptr, 0);
+        CCBuffer *obj = new CCBuffer(0, 0);
         obj->Wrap(info.This());
         info.GetReturnValue().Set(info.This());
     } else {
         int argc = info.Length();
-        Local<Value> argv[argc];
+        Local<Value> *argv = new Local<Value>[argc];
         for (int i=0; i<argc; ++i)
             argv[i] = info[i];
         Local<Function> ctor = Nan::GetFunction(Nan::New(tmpl())).ToLocalChecked();
         info.GetReturnValue().Set(Nan::NewInstance(ctor, argc, argv).ToLocalChecked());
+        delete [] argv;
     }
 }
 

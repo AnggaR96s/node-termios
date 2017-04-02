@@ -17,7 +17,7 @@ public:
     static bool IsInstance(Local<Value> v) { return ctorTemplate()->HasInstance(v); }
     struct termios* data() { return &value_; }
 private:
-    explicit CTermios(struct termios *value);
+    explicit CTermios(struct termios *value = 0);
     ~CTermios();
     static Nan::Persistent<FunctionTemplate>& tmpl();
 

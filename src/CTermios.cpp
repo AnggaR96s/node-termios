@@ -28,7 +28,7 @@ Local<FunctionTemplate> CTermios::init() {
                 CTermios *obj = Nan::ObjectWrap::Unwrap<CTermios>(info.Holder());
             info.GetReturnValue().Set(Nan::New(obj->ccbuffer));
             }),
-            nullptr,
+            0,
         Nan::New<Value>(Nan::New<Number>(0)),
         DEFAULT,
         static_cast<PropertyAttribute>(
@@ -122,7 +122,7 @@ Local<FunctionTemplate> CTermios::init() {
 }
 
 
-CTermios::CTermios(struct termios *value = nullptr)
+CTermios::CTermios(struct termios *value)
   : value_()
 {
     if (value)
@@ -153,7 +153,7 @@ NAN_METHOD(CTermios::New)
                 ctermios object - initialize termios struct from other object
                 number          - initialize termios struct from fd
         */
-        struct termios *old = nullptr;
+        struct termios *old = 0;
         if (info.Length() > 1)
             return Nan::ThrowError("to many arguments");
         if (info.Length() == 1) {
@@ -190,7 +190,7 @@ NAN_METHOD(CTermios::New)
     } else {
         // silently transit `CTermios()` to `new CTermios()`
         int argc = info.Length();
-        Local<Value> argv[argc];
+        Local<Value> *argv = new Local<Value>[argc];
         for (int i=0; i<argc; ++i)
             argv[i] = info[i];
         Local<Function> ctor = Nan::GetFunction(ctorTemplate()).ToLocalChecked();
@@ -202,6 +202,7 @@ NAN_METHOD(CTermios::New)
             info.GetReturnValue().SetUndefined();
         else
             info.GetReturnValue().Set(instance.ToLocalChecked());
+        delete [] argv;
     }
 }
 
