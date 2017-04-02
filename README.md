@@ -16,7 +16,7 @@
       To prefill termios data set `arg` to
       a valid file descriptor or another Termios object.
     - `loadFrom(fd)`: Load termios data from file descriptor `fd`.
-    - `applyTo(fd, action)`: Set termios data of file descriptor `fd`.
+    - `writeTo(fd, action)`: Set termios data of file descriptor `fd`.
       `action` must be one of `termios.ACTION` (defaults to `TCSAFLUSH`).
     - `getInputSpeed()`: Returns input channel baud rate setting.
     - `getOutputSpeed()`: Returns output channel baud rate setting.
@@ -78,6 +78,6 @@ var sym = require('node-termios').ALL_SYMBOLS;
 
 var tty = new Termios(0);
 tty.c_lflag &= ~(sym.ECHO | sym.ECHONL);
-tty.applyTo(0);
+tty.writeTo(0);
 ```
 
