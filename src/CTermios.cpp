@@ -25,10 +25,10 @@ Local<FunctionTemplate> CTermios::init() {
         Nan::New<String>("c_cc").ToLocalChecked(),
         CC_Getter,
         0,
-        Nan::New<v8::Value>(Nan::New<Number>(0)),
+        Local<Value>(),
         DEFAULT,
         static_cast<PropertyAttribute>(
-            PropertyAttribute::DontDelete | PropertyAttribute::ReadOnly)
+            v8::PropertyAttribute::DontDelete | v8::PropertyAttribute::ReadOnly)
     );
     Nan::SetAccessor(
         tpl->InstanceTemplate(),
@@ -37,7 +37,7 @@ Local<FunctionTemplate> CTermios::init() {
         LFlag_Setter,
         Local<Value>(),
         DEFAULT,
-        PropertyAttribute::DontDelete
+        v8::PropertyAttribute::DontDelete
     );
     Nan::SetAccessor(
       tpl->InstanceTemplate(),
@@ -46,7 +46,7 @@ Local<FunctionTemplate> CTermios::init() {
       CFlag_Setter,
       Local<Value>(),
       DEFAULT,
-      PropertyAttribute::DontDelete
+      v8::PropertyAttribute::DontDelete
     );
     Nan::SetAccessor(
       tpl->InstanceTemplate(),
@@ -55,7 +55,7 @@ Local<FunctionTemplate> CTermios::init() {
       OFlag_Setter,
       Local<Value>(),
       DEFAULT,
-      PropertyAttribute::DontDelete
+      v8::PropertyAttribute::DontDelete
     );
     Nan::SetAccessor(
       tpl->InstanceTemplate(),
@@ -64,7 +64,7 @@ Local<FunctionTemplate> CTermios::init() {
       IFlag_Setter,
       Local<Value>(),
       DEFAULT,
-      PropertyAttribute::DontDelete
+      v8::PropertyAttribute::DontDelete
     );
 
     // make function template persistent
