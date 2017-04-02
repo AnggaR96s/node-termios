@@ -163,9 +163,65 @@ NAN_METHOD(Tcflow)
     info.GetReturnValue().SetUndefined();
 }
 
-/*
-speed_t cfgetispeed(const struct termios *termios_p);
-speed_t cfgetospeed(const struct termios *termios_p);
-int cfsetispeed(struct termios *termios_p, speed_t speed);
-int cfsetospeed(struct termios *termios_p, speed_t speed);
-*/
+
+NAN_METHOD(Cfgetispeed)
+{
+    Nan::HandleScope scope;
+    if (info.Length() != 1
+          || !info[0]->IsObject()
+          || !CTermios::IsInstance(info[0])) {
+        return Nan::ThrowError("usage: termios.cfgetispeed(ctermios)");
+    }
+    struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->data();
+    info.GetReturnValue().Set(Nan::New<Number>(cfgetispeed(t)));
+}
+
+
+NAN_METHOD(Cfgetospeed)
+{
+    Nan::HandleScope scope;
+    if (info.Length() != 1
+          || !info[0]->IsObject()
+          || !CTermios::IsInstance(info[0])) {
+        return Nan::ThrowError("usage: termios.cfgetospeed(ctermios)");
+    }
+    struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->data();
+    info.GetReturnValue().Set(Nan::New<Number>(cfgetospeed(t)));
+}
+
+
+NAN_METHOD(Cfsetispeed)
+{
+    Nan::HandleScope scope;
+    if (info.Length() != 2
+          || !info[0]->IsObject()
+          || !CTermios::IsInstance(info[0])
+          || !info[1]->IsNumber()) {
+        return Nan::ThrowError("usage: termios.cfsetispeed(ctermios, speed)");
+    }
+    struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->data();
+    if (cfsetispeed(t, info[1]->IntegerValue())) {
+        string error(strerror(errno));
+        return Nan::ThrowError((string("cfsetispeed failed - ") + error).c_str());
+    }
+    info.GetReturnValue().SetUndefined();
+}
+
+
+NAN_METHOD(Cfsetospeed)
+{
+    Nan::HandleScope scope;
+    if (info.Length() != 2
+          || !info[0]->IsObject()
+          || !CTermios::IsInstance(info[0])
+          || !info[1]->IsNumber()) {
+        return Nan::ThrowError("usage: termios.cfsetospeed(ctermios, speed)");
+    }
+    struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->data();
+    if (cfsetospeed(t, info[1]->IntegerValue())) {
+        string error(strerror(errno));
+        return Nan::ThrowError((string("cfsetospeed failed - ") + error).c_str());
+    }
+    info.GetReturnValue().SetUndefined();
+}
+

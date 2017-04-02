@@ -334,6 +334,10 @@ NAN_MODULE_INIT(init) {
     MODULE_EXPORT("tcdrain", Nan::New<FunctionTemplate>(Tcdrain)->GetFunction());
     MODULE_EXPORT("tcflush", Nan::New<FunctionTemplate>(Tcflush)->GetFunction());
     MODULE_EXPORT("tcflow", Nan::New<FunctionTemplate>(Tcflow)->GetFunction());
+    MODULE_EXPORT("cfgetispeed", Nan::New<FunctionTemplate>(Cfgetispeed)->GetFunction());
+    MODULE_EXPORT("cfgetospeed", Nan::New<FunctionTemplate>(Cfgetospeed)->GetFunction());
+    MODULE_EXPORT("cfsetispeed", Nan::New<FunctionTemplate>(Cfsetispeed)->GetFunction());
+    MODULE_EXPORT("cfsetospeed", Nan::New<FunctionTemplate>(Cfsetospeed)->GetFunction());
 
     // objects
     // NOTE: `SomeClass::init()` must be called prior usage in JS
