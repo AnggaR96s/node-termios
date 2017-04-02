@@ -33,7 +33,7 @@ Local<FunctionTemplate> CCBuffer::init()
         0,
         Local<Value>(),
         DEFAULT,
-        v8::PropertyAttribute::DontDelete
+        DontDelete
     );
 
     // make function template persistent
