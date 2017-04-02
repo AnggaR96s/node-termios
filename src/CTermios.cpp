@@ -171,7 +171,7 @@ NAN_METHOD(CTermios::New)
                 }
             } else if (info[0]->IsObject() && IsInstance(info[0])) {
                 old = &Nan::ObjectWrap::Unwrap<CTermios>(info[0]->ToObject())->value_;
-            } else
+            } else if (!info[0]->IsUndefined() && !info[0]->IsNull())
                 return Nan::ThrowError("first argument must be CTermios or file descriptor");
         }
         CTermios *obj = new CTermios(old);
