@@ -31,7 +31,7 @@ Local<FunctionTemplate> CCBuffer::init()
         Nan::New<String>("length").ToLocalChecked(),
         Length_Getter,
         0,
-        Nan::New<Value>(Nan::New<Number>(0)),
+        Nan::New<v8::Value>(Nan::New<Number>(0)),
         DEFAULT,
         PropertyAttribute::DontDelete
     );
@@ -117,7 +117,7 @@ NAN_METHOD(CCBuffer::New)
         info.GetReturnValue().Set(info.This());
     } else {
         int argc = info.Length();
-        Local<Value> *argv = new Local<Value>[argc];
+        Local<v8::Value> *argv = new Local<v8::Value>[argc];
         for (int i=0; i<argc; ++i)
             argv[i] = info[i];
         Local<Function> ctor = Nan::GetFunction(Nan::New(tmpl())).ToLocalChecked();
