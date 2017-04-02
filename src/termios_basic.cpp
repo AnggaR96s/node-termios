@@ -7,6 +7,7 @@
  */
 #include "termios_basic.h"
 #include "CTermios.h"
+#include <errno.h>
 
 NAN_METHOD(Isatty)
 {
