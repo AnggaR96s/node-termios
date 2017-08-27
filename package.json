@@ -1,6 +1,6 @@
 {
   "name": "node-termios",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "terminal settings for node",
   "main": "index.js",
   "scripts": {
