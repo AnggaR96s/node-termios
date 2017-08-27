@@ -67,7 +67,9 @@ void populate_symbol_maps(Local<Object> all,
 #if defined(CRDLY)
     TERMIOS_EXPORT(c_oflag, oflags, CRDLY);
 #endif
+#if defined(TABDLY)
     TERMIOS_EXPORT(c_oflag, oflags, TABDLY);
+#endif
 #if defined(BSDLY)
     TERMIOS_EXPORT(c_oflag, oflags, BSDLY);
 #endif
