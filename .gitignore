@@ -138,3 +138,10 @@ jspm_packages
 /.idea/
 /build/
 /node-termios.iml
+out/
+Makefile.gyp
+*.Makefile
+*.target.gyp.mk
+builderror.log
+/lib/
+npm-debug.log

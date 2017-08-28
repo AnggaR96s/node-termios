@@ -4,7 +4,10 @@
   "description": "terminal settings for node",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "tsc": "tsc",
+    "tslint": "tslint src/**/*.ts",
+    "test": "cross-env NODE_ENV=test mocha -R spec lib/*.test.js",
+    "prepublish": "npm run tsc"
   },
   "keywords": [
     "termios",
@@ -20,5 +23,12 @@
   "license": "MIT",
   "dependencies": {
     "nan": "^2.5.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.42",
+    "@types/node": "^8.0.25",
+    "mocha": "^3.5.0",
+    "tslint": "^5.7.0",
+    "typescript": "^2.4.2"
   }
 }

@@ -23,7 +23,6 @@ void populate_symbol_maps(Local<Object> all,
                           Local<Object> jsbaudrates)
 {
     // no platform switches here, simply test for existance of questionable symbols
-    // TODO: explicit checks on linux, OSX, FreeBSD, Solaris, other BSDs
 
     // c_iflag
     TERMIOS_EXPORT(c_iflag, iflags, IGNBRK);
