@@ -56,3 +56,4 @@ TermiosHelper.prototype.__proto__ = {};
 native.CTermios.prototype.__proto__ = TermiosHelper.prototype;
 
 export let Termios: I.ITermios = native.CTermios;
+export {I as Interfaces};
