@@ -185,7 +185,7 @@ export interface IBAUD {
 /**
  * native module exports
  */
-export interface Native {
+export interface INative {
     isatty(fd: number): boolean;
     ttyname(fd: number): string;
     ptsname(fd: number): string;

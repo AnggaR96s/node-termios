@@ -1,6 +1,7 @@
 import * as I from './interfaces';
+import {ITermios} from './interfaces';
 import * as path from 'path';
-export const native: I.Native = require(path.join('..', 'build', 'Release', 'termios.node'));
+export const native: I.INative = require(path.join('..', 'build', 'Release', 'termios.node'));
 const s = native.ALL_SYMBOLS;
 
 
@@ -55,5 +56,6 @@ class TermiosHelper extends native.CTermios {
 TermiosHelper.prototype.__proto__ = {};
 native.CTermios.prototype.__proto__ = TermiosHelper.prototype;
 
-export let Termios: I.ITermios = native.CTermios;
+export let Termios: ITermios = native.CTermios;
 export {I as Interfaces};
+export {ITermios};
