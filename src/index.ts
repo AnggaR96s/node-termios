@@ -1,30 +1,10 @@
+import * as I from './interfaces';
 import * as path from 'path';
-export const native = require(path.join('..', 'build', 'Release', 'termios.node'));
+export const native: I.Native = require(path.join('..', 'build', 'Release', 'termios.node'));
 const s = native.ALL_SYMBOLS;
 
-export interface ICTermios {
-    new (value?: ICTermios|number|null): ICTermios;
-    (value?: ICTermios|number|null): ICTermios;
-    c_iflag: number;
-    c_oflag: number;
-    c_cflag: number;
-    c_lflag: number;
-    c_cc: number[];
-    writeTo(fd: number, action?: number): void;
-    loadFrom(fd: number): void;
-    getInputSpeed(): number;
-    getInputSpeed(): number;
-    setInputSpeed(baudrate: number): void;
-    setOutputSpeed(baudrate: number): void;
-    setSpeed(baudrate: number): void;
-    setraw(): void;
-    setcbreak(): void;
-    __proto__: any;
-}
 
-export let Termios: ICTermios = native.CTermios;
-
-class TermiosHelper extends Termios {
+class TermiosHelper extends native.CTermios {
     writeTo(fd: number, action?: number): void {
         if (typeof action === 'undefined')
             action = s.TCSAFLUSH;
@@ -63,7 +43,16 @@ class TermiosHelper extends Termios {
         this.c_cc[s.VMIN] = 1;
         this.c_cc[s.VTIME] = 0;
     }
+    setcooked(): void {
+        this.c_iflag = s.BRKINT | s.ICRNL | s.INPCK | s.ISTRIP | s.IXON | s.IGNPAR;
+        this.c_oflag = s.OPOST | s.ONLCR;
+        this.c_cflag |= s.CS8;
+        this.c_lflag = s.ECHOKE | s.ECHOCTL | s.ECHOK | s.ECHOE | s.ECHO | s.ICANON | s.IEXTEN | s.ISIG;
+        // FIXME: set c_cc values;
+    }
 }
 
 TermiosHelper.prototype.__proto__ = {};
-Termios.prototype.__proto__ = TermiosHelper.prototype;
+native.CTermios.prototype.__proto__ = TermiosHelper.prototype;
+
+export let Termios: I.ITermios = native.CTermios;

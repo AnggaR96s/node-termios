@@ -1,8 +1,8 @@
 {
   "name": "node-termios",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "terminal settings for node",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "scripts": {
     "tsc": "tsc",
     "tslint": "tslint src/**/*.ts",
