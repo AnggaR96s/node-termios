@@ -58,7 +58,9 @@ NAN_METHOD(Tcgetattr)
         return Nan::ThrowError("Usage: tcgetattr(fd, ctermios)");
     }
     struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[1]->ToObject())->data();
-    if (tcgetattr(info[0]->IntegerValue(), t)) {
+    int res;
+    TEMP_FAILURE_RETRY(res = tcgetattr(info[0]->IntegerValue(), t));
+    if (res) {
         std::string error(strerror(errno));
         return Nan::ThrowError((std::string("tcgetattr failed - ") + error).c_str());
     }
@@ -77,7 +79,9 @@ NAN_METHOD(Tcsetattr)
         return Nan::ThrowError("Usage: tcsetattr(fd, action, ctermios)");
     }
     struct termios *t = Nan::ObjectWrap::Unwrap<CTermios>(info[2]->ToObject())->data();
-    if (tcsetattr(info[0]->IntegerValue(), info[1]->IntegerValue(), t)) {
+    int res;
+    TEMP_FAILURE_RETRY(res = tcsetattr(info[0]->IntegerValue(), info[1]->IntegerValue(), t));
+    if (res) {
         std::string error(strerror(errno));
         return Nan::ThrowError((std::string("tcsetattr failed - ") + error).c_str());
     }
@@ -93,7 +97,9 @@ NAN_METHOD(Tcsendbreak)
           || !info[1]->IsNumber()) {
         return Nan::ThrowError("usage: termios.tcsendbreak(fd, duration)");
     }
-    if (tcsendbreak(info[0]->IntegerValue(), info[1]->IntegerValue())) {
+    int res;
+    TEMP_FAILURE_RETRY(res = tcsendbreak(info[0]->IntegerValue(), info[1]->IntegerValue()));
+    if (res) {
         std::string error(strerror(errno));
         return Nan::ThrowError((std::string("tcsendbreak failed - ") + error).c_str());
     }
@@ -107,7 +113,9 @@ NAN_METHOD(Tcdrain)
     if (info.Length() != 1 || !info[0]->IsNumber()) {
         return Nan::ThrowError("usage: termios.tcdrain(fd)");
     }
-    if (tcdrain(info[0]->IntegerValue())) {
+    int res;
+    TEMP_FAILURE_RETRY(res = tcdrain(info[0]->IntegerValue()));
+    if (res) {
         std::string error(strerror(errno));
         return Nan::ThrowError((std::string("tcdrain failed - ") + error).c_str());
     }
@@ -123,7 +131,9 @@ NAN_METHOD(Tcflush)
           || !info[1]->IsNumber()) {
         return Nan::ThrowError("usage: termios.tcflush(fd, queue_selector)");
     }
-    if (tcflush(info[0]->IntegerValue(), info[1]->IntegerValue())) {
+    int res;
+    TEMP_FAILURE_RETRY(res = tcflush(info[0]->IntegerValue(), info[1]->IntegerValue()));
+    if (res) {
         std::string error(strerror(errno));
         return Nan::ThrowError((std::string("tcflush failed - ") + error).c_str());
     }
@@ -139,7 +149,9 @@ NAN_METHOD(Tcflow)
           || !info[1]->IsNumber()) {
         return Nan::ThrowError("usage: termios.tcflow(fd, action)");
     }
-    if (tcflow(info[0]->IntegerValue(), info[1]->IntegerValue())) {
+    int res;
+    TEMP_FAILURE_RETRY(res = tcflow(info[0]->IntegerValue(), info[1]->IntegerValue()));
+    if (res) {
         std::string error(strerror(errno));
         return Nan::ThrowError((std::string("tcflow failed - ") + error).c_str());
     }

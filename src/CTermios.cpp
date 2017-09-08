@@ -116,7 +116,9 @@ NAN_METHOD(CTermios::New)
                 }
                 struct termios fromfd = termios();
                 old = &fromfd;
-                if (tcgetattr(fd, old)) {
+                int res;
+                TEMP_FAILURE_RETRY(res = tcgetattr(fd, old));
+                if (res) {
                     std::string error(strerror(errno));
                     return Nan::ThrowError((std::string("tcgetattr failed - ") + error).c_str());
                 }

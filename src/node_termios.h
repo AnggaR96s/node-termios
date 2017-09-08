@@ -24,4 +24,15 @@ Nan::Set(js_obj, Nan::New<String>(#sym).ToLocalChecked(),Nan::New<Number>(sym))
 #define MODULE_EXPORT(name, symbol)                                           \
 Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), symbol)
 
+#ifndef TEMP_FAILURE_RETRY
+#define TEMP_FAILURE_RETRY(exp)            \
+  ({                                       \
+    int _rc;                               \
+    do {                                   \
+      _rc = (exp);                         \
+    } while (_rc == -1 && errno == EINTR); \
+    _rc;                                   \
+  })
+#endif
+
 #endif // NODE_TERMIOS_H
