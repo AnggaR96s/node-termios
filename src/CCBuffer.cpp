@@ -12,7 +12,7 @@ Local<FunctionTemplate> CCBuffer::init()
 {
     Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
     tpl->SetClassName(Nan::New("CCBuffer").ToLocalChecked());
-    tpl->InstanceTemplate()->SetInternalFieldCount(2);
+    tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
     // register methods
     Nan::SetPrototypeMethod(tpl, "toBuffer", ToBuffer);

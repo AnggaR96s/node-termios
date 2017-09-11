@@ -14,7 +14,7 @@
 Local<FunctionTemplate> CTermios::init() {
     Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
     tpl->SetClassName(Nan::New("CTermios").ToLocalChecked());
-    tpl->InstanceTemplate()->SetInternalFieldCount(3);
+    tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
     // register methods
     Nan::SetPrototypeMethod(tpl, "toBuffer", ToBuffer);
