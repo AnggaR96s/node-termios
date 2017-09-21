@@ -1,3 +1,6 @@
+if (process.platform === 'win32')
+    throw new Error('unsupported platform');
+
 import * as I from './interfaces';
 import {ITermios} from './interfaces';
 import * as path from 'path';

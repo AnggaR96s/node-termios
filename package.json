@@ -8,6 +8,7 @@
     "tsc": "tsc",
     "tslint": "tslint src/**/*.ts",
     "test": "cross-env NODE_ENV=test mocha -R spec lib/*.test.js",
+    "install": "node install.js",
     "prepublish": "npm run tsc"
   },
   "keywords": [
