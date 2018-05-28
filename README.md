@@ -33,7 +33,7 @@
 ### Termios.h symbols
 
 The module exports known symbols defined by the
-underlying termios.h (platform dependent).
+underlying termios.h (platform dependent) and low level functions under `.native`.
 
 - `ALL_SYMBOLS`: All known symbols.
 - `IFLAGS`: Input mode symbols.
@@ -74,7 +74,7 @@ underlying termios.h (platform dependent).
 The example demostrates how to switch off echoing on STDIN.
 ```javascript
 var Termios = require('node-termios').Termios;
-var sym = require('node-termios').ALL_SYMBOLS;
+var sym = require('node-termios').native.ALL_SYMBOLS;
 
 var tty = new Termios(0);
 tty.c_lflag &= ~(sym.ECHO | sym.ECHONL);
